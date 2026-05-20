@@ -904,38 +904,32 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 </div>
 
 
-<!-- ══ SETTINGS (API KEY) ══ -->
+<!-- ══ SETTINGS (INFO) ══ -->
 <div class="modal-overlay" id="settingsModal">
-  <div class="modal" style="max-width:480px">
+  <div class="modal" style="max-width:440px">
     <div class="modal-header">
-      <div class="modal-title">⚙️ Impostazioni</div>
+      <div class="modal-title">⚙️ Stato Sistema</div>
       <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
     </div>
     <div class="modal-body">
-      <p class="apikey-info">
-        Configura Supabase per il salvataggio cloud e Perplexity per le schede tecniche.<br>
-        Tutte le credenziali sono salvate solo nel tuo browser e non vengono mai condivise.
+      <p class="apikey-info" style="margin-bottom:1.2rem">
+        L'app è completamente configurata — nessuna impostazione manuale richiesta.
       </p>
-      <div class="field">
-        <label>Supabase Project URL</label>
-        <input type="text" id="s-supabase-url" placeholder="https://xxxx.supabase.co">
-        <div class="field-hint"><a href="https://supabase.com/dashboard" target="_blank" rel="noopener" style="color:var(--gold)">→ Supabase Dashboard</a> · Settings → API → Project URL</div>
-      </div>
-      <div class="field">
-        <label>Supabase Anon Key</label>
-        <input type="password" id="s-supabase-anon" placeholder="eyJ…">
-        <div class="field-hint">Settings → API → Project API Keys → anon / public</div>
-      </div>
-      <div class="form-divider"></div>
-      <div class="field">
-        <label>Perplexity API Key</label>
-        <input type="password" id="s-apikey" placeholder="pplx-…">
-        <div class="field-hint"><a href="https://www.perplexity.ai/settings/api" target="_blank" rel="noopener" style="color:var(--gold)">→ Ottieni una chiave API Perplexity</a> (per generare le schede tecniche)</div>
+      <div style="display:flex;flex-direction:column;gap:.7rem;font-size:.82rem">
+        <div style="display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.15);border-radius:8px">
+          <span style="font-size:1.1rem">☁️</span>
+          <div><div style="font-weight:600;color:#4ADE80">Supabase</div><div style="color:rgba(255,255,255,.4);font-size:.75rem">Database cloud — credenziali incorporate</div></div>
+          <span style="margin-left:auto;color:#4ADE80;font-size:.8rem" id="sb-status-dot">●</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.15);border-radius:8px">
+          <span style="font-size:1.1rem">🔍</span>
+          <div><div style="font-weight:600;color:#4ADE80">Perplexity Sonar Pro</div><div style="color:rgba(255,255,255,.4);font-size:.75rem">Ricerca web — chiave protetta lato server</div></div>
+          <span style="margin-left:auto;color:#4ADE80;font-size:.8rem">●</span>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('settingsModal')">Annulla</button>
-      <button class="btn btn-primary" onclick="saveSettings()">💾 Salva</button>
+      <button class="btn btn-primary" onclick="closeModal('settingsModal')">OK</button>
     </div>
   </div>
 </div>
@@ -949,21 +943,18 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 /* ══════════════════════════════════════════════════════
    SERVER API + LOCALSTORAGE FALLBACK
 ══════════════════════════════════════════════════════ */
-/* ── SUPABASE CONFIG ── */
-const LS_KEY      = 'cantina_supabase_v1';
-const SB_URL_KEY  = 'cantina_supabase_url';
-const SB_ANON_KEY = 'cantina_supabase_anon';
+/* ── SUPABASE CONFIG (credenziali incorporate — nessuna configurazione necessaria) ── */
+const LS_KEY            = 'cantina_supabase_v1';
+const SB_URL_HARDCODED  = 'https://biggbsrgzstuqldrwzeq.supabase.co';
+const SB_ANON_HARDCODED = 'sb_publishable_-eVRLQPux_uvrZ3dAss9xA_JPiui49I';
 let _sbClient = null;
 let supabaseOk = false;
 
 function newId() { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
 
 function getSupabaseClient() {
-  const url  = localStorage.getItem(SB_URL_KEY);
-  const anon = localStorage.getItem(SB_ANON_KEY);
-  if (!url||!anon) { _sbClient=null; return null; }
   if (!_sbClient) {
-    try { _sbClient = window.supabase.createClient(url, anon); }
+    try { _sbClient = window.supabase.createClient(SB_URL_HARDCODED, SB_ANON_HARDCODED); }
     catch(e) { console.error('Supabase init error',e); _sbClient=null; }
   }
   return _sbClient;
@@ -977,7 +968,7 @@ async function initSupabase() {
   if (!cl) {
     supabaseOk = false;
     ban.className = 'server-banner offline';
-    txt.textContent = '☁️ Supabase non configurato — dati salvati nel browser. Clicca ⚙️ per configurare.';
+    txt.textContent = '⚠️ Errore inizializzazione Supabase';
     return;
   }
   try {
@@ -987,7 +978,7 @@ async function initSupabase() {
   ban.className = 'server-banner '+(supabaseOk?'online':'offline');
   txt.textContent = supabaseOk
     ? '☁️ Supabase connesso — dati sincronizzati nel cloud in tempo reale'
-    : '⚠️ Errore connessione Supabase — verifica le credenziali in ⚙️';
+    : '⚠️ Errore connessione Supabase';
 }
 
 /* LocalStorage helpers (fallback) */
@@ -1110,8 +1101,7 @@ async function renderTable() {
     const valoreStr     = valore>0 ? '€ '+valore.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
     const noteCell      = w.note ? `<span title="${esc(w.note)}">${esc(w.note)}</span>` : '<span style="opacity:.28">—</span>';
     const drinkBtn      = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">🍷</button>` : '';
-    const apiKey        = localStorage.getItem('cantina_perplexity_apikey')||'';
-    const schedaTitle   = apiKey ? 'Genera Scheda Tecnica (Perplexity)' : 'Imposta API Key Perplexity in ⚙️ per generare la scheda';
+    const schedaTitle   = 'Genera Scheda Tecnica (Perplexity)';
     return `<tr>
       <td class="td-cantina">${esc(w.cantina||'—')}</td>
       <td class="td-nome">${esc(w.nome||'—')}</td>
@@ -1459,22 +1449,9 @@ function printList() { window.print(); }
    SETTINGS
 ══════════════════════════════════════════════════════ */
 function openSettings() {
-  document.getElementById('s-supabase-url').value  = localStorage.getItem(SB_URL_KEY)||'';
-  document.getElementById('s-supabase-anon').value = localStorage.getItem(SB_ANON_KEY)||'';
-  document.getElementById('s-apikey').value = localStorage.getItem('cantina_perplexity_apikey')||'';
+  const dot = document.getElementById('sb-status-dot');
+  if(dot) dot.style.color = supabaseOk ? '#4ADE80' : '#F87171';
   openModal('settingsModal');
-}
-function saveSettings() {
-  const url  = document.getElementById('s-supabase-url').value.trim();
-  const anon = document.getElementById('s-supabase-anon').value.trim();
-  const key  = document.getElementById('s-apikey').value.trim();
-  if(url)  localStorage.setItem(SB_URL_KEY, url);   else localStorage.removeItem(SB_URL_KEY);
-  if(anon) localStorage.setItem(SB_ANON_KEY, anon); else localStorage.removeItem(SB_ANON_KEY);
-  if(key)  localStorage.setItem('cantina_perplexity_apikey', key); else localStorage.removeItem('cantina_perplexity_apikey');
-  _sbClient = null;
-  closeModal('settingsModal');
-  showToast('Impostazioni salvate — connessione in corso…','info');
-  initSupabase().then(()=>{ updateStats(); renderTable(); });
 }
 
 
@@ -1621,8 +1598,6 @@ function setSchedaLoading(on){
 
 /* ── open / close ── */
 async function openScheda(id){
-  const key=localStorage.getItem('cantina_perplexity_apikey')||'';
-  if(!key){showToast('Imposta prima la tua API Key Perplexity in ⚙️','error');openSettings();return;}
   const wines=await dbLoad();
   const wine=wines.find(w=>w.id===id);
   if(!wine)return;
@@ -1633,11 +1608,11 @@ async function openScheda(id){
   document.body.classList.add('scheda-open');
   setSchedaLoading(true);
   try{
-    const{data,usedWebSearch}=await callPerplexity(key,wine.nome||'',String(wine.annata||''),wine.cantina||'',wine.urlRiferimento||'',wine._pdfText||_pdfText||'');
+    const{data,usedWebSearch}=await callPerplexity(wine.nome||'',String(wine.annata||''),wine.cantina||'',wine.urlRiferimento||'',wine._pdfText||_pdfText||'');
     renderSheet(data,wine.nome||'',String(wine.annata||''),wine.cantina||'',usedWebSearch);
   }catch(e){
     setSchedaLoading(false);
-    showToast('Errore API: '+(e.message||'Verifica la chiave e riprova'),'error');
+    showToast('Errore generazione scheda: '+(e.message||'Riprova tra qualche istante'),'error');
     document.getElementById('schedaCardArea').style.display='block';
   }
 }
@@ -1650,11 +1625,13 @@ function closeScheda(){
 }
 function printScheda(){window.print();}
 
-/* ── Perplexity calls — sonar-pro ha web search nativo su ogni chiamata ── */
-async function webSearch(key,query){
+/* ── Perplexity calls — proxy via Netlify Function (chiave segreta lato server) ── */
+const PERPLEXITY_PROXY = '/.netlify/functions/perplexity';
+
+async function webSearch(query){
   try{
-    const r=await fetch('https://api.perplexity.ai/chat/completions',{
-      method:'POST',headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
+    const r=await fetch(PERPLEXITY_PROXY,{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'sonar-pro',
         messages:[{role:'user',content:query}],
@@ -1666,7 +1643,7 @@ async function webSearch(key,query){
   }catch{return'';}
 }
 
-async function callPerplexity(key,wineName,vintage,producer,producerUrl='',techSheetText=''){
+async function callPerplexity(wineName,vintage,producer,producerUrl='',techSheetText=''){
   /* Identificatore preciso: evita confusione con varianti (Riserva, Classico, ecc.) */
   const exactName = producer ? `"${wineName}" prodotto da "${producer}"` : `"${wineName}"`;
   const vintageStr = vintage ? `annata ${vintage}` : 'annata non specificata';
@@ -1707,7 +1684,7 @@ Cerca la storia e le curiosità di ${exactName}${producer?' e della cantina "'+p
 Desidero sapere: origine del nome del vino, storia del vigneto o della parcella specifica, aneddoti sulla sua creazione o sul produttore, filosofia e valori della cantina, elementi di unicità rispetto agli altri vini della stessa denominazione, citazioni del produttore o enologo, legame col territorio e tradizione familiare.
 Fonti: sito ufficiale produttore, gamberorosso.it, decanter.com, vinous.com, interviste giornalistiche, wineenthusiast.com.`;
 
-  const [r1,r2,r3,r4]=await Promise.allSettled([webSearch(key,q1),webSearch(key,q2),webSearch(key,q3),webSearch(key,q4)]);
+  const [r1,r2,r3,r4]=await Promise.allSettled([webSearch(q1),webSearch(q2),webSearch(q3),webSearch(q4)]);
   const trim=(s,max)=>s&&s.length>max?s.slice(0,max)+'…':s||'';
   const ctx=[
     r1.status==='fulfilled'&&r1.value?`=== DATI TECNICI ===\n${trim(r1.value,2000)}`:'',
@@ -1736,8 +1713,8 @@ premi: includi TUTTI i premi trovati dalla ricerca, di qualsiasi annata — non 
 note_cantina: 4-6 frasi di PURO STORYTELLING sulla CANTINA/AZIENDA: storia della famiglia o fondazione, valori e filosofia produttiva, legame col territorio, curiosità o aneddoti sull'azienda. NON inserire dati tecnici come affinamento, gradazione alcolica o descrizioni organolettiche.
 note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del nome, storia della vigna o parcella, aneddoti sulla sua creazione, elementi di unicità, citazioni del produttore. NON ripetere dati tecnici già presenti nelle altre sezioni.
 Se le informazioni di storytelling non sono disponibili lascia null.`;
-  const res=await fetch('https://api.perplexity.ai/chat/completions',{
-    method:'POST',headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
+  const res=await fetch(PERPLEXITY_PROXY,{
+    method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'sonar-pro',messages:[{role:'system',content:'Sei un Master Sommelier con enciclopedica conoscenza di tutti i principali vini italiani e internazionali, inclusi metodi di vinificazione, affinamento, vitigni e stili produttivi. Rispondi SOLO con JSON valido e completo, senza markdown, senza backtick, senza testo prima o dopo il JSON. Non lasciare mai campi obbligatori come vinificazione e affinamento vuoti o con "Da verificare" se il vino è documentato — usa la tua conoscenza e i dati dalla ricerca web.'},{role:'user',content:prompt}],temperature:.2,max_tokens:8000})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`Errore API Perplexity (${res.status})`);}
