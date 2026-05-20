@@ -415,12 +415,17 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .tier-gold{background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.3)}
 .tier-silver{background:rgba(148,163,184,.07);border-color:rgba(148,163,184,.3)}
 .tier-bronze{background:rgba(180,120,80,.07);border-color:rgba(180,120,80,.25)}
-.award-medal{font-size:1.6rem;flex-shrink:0}
+.award-medal{font-size:1.4rem;flex-shrink:0;min-width:3.2rem;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:.1rem}
 .award-name{font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:.18rem}
 .award-meta{font-size:.72rem;color:var(--gray-500);margin-bottom:.28rem}
 .award-desc{font-size:.75rem;color:var(--gray-500);font-style:italic}
 .award-other-chip{display:inline-block;margin-left:.4rem;padding:.1rem .4rem;background:rgba(234,179,8,.12);border-radius:4px;font-size:.6rem;color:#92400e;font-weight:600}
 .no-awards{font-size:.82rem;color:var(--gray-400);font-style:italic;padding:.5rem 0}
+/* Award visual icons */
+.aw-glasses,.aw-viti,.aw-grappoli,.aw-slow,.aw-vbi{font-size:.95rem;letter-spacing:.06rem;line-height:1.3;display:block;text-align:center}
+.aw-grey{opacity:.6}
+.aw-score-num{font-size:1.55rem;font-weight:700;color:var(--accent);line-height:1;display:block;text-align:center}
+.aw-score-pts{font-size:.5rem;font-weight:500;color:var(--gray-500);margin-left:.1rem;vertical-align:super;display:inline}
 
 /* Production */
 .prod-tile{background:var(--gray-100);border-radius:9px;padding:1rem;margin-bottom:.85rem;border-left:3px solid var(--wine)}
@@ -1683,17 +1688,24 @@ ATTENZIONE: genera la scheda SOLO per questo vino specifico, NON per varianti (R
 ${urlHint}${pdfSection}
 RICERCA RICHIESTA — cerca attivamente su web:
 1) Sito ufficiale del produttore (scheda tecnica PDF/HTML): vitigni con percentuali, vinificazione, affinamento, gradazione, resa, tiratura
-2) gamberorosso.it, vitae.ais.it, bibenda.it, slowine.it: premi Tre Bicchieri, Quattro Viti, Cinque Grappoli — TUTTE le annate
-3) robertparker.com, wine-spectator.com, jamessuckling.com, decanter.com, vinous.com, luca-maroni.com: punteggi e note — TUTTE le annate
+2) Guide italiane — cerca TUTTI i livelli per TUTTE le annate disponibili:
+   gamberorosso.it: Tre Bicchieri, Due Bicchieri Rossi, Due Bicchieri, Un Bicchiere
+   vitae.ais.it: Quattro Viti, Tre Viti, Due Viti, Una Vite
+   bibenda.it: Cinque Grappoli, Quattro Grappoli, Tre Grappoli, Due Grappoli, Un Grappolo
+   slowine.it: Chiocciola, Bottiglia, Grande Vino
+   vinibuoni.it (Touring Club Italiano): Corona + stelle (1-5)
+3) Guide internazionali — punteggi numerici per TUTTE le annate:
+   luca-maroni.com: punteggio 0-100
+   robertparker.com / Wine Advocate, wine-spectator.com, jamessuckling.com, decanter.com, vinous.com
 4) Storia cantina: fondazione, filosofia, legame territorio, aneddoti
 Restituisci SOLO questo JSON:
-{"denominazione":"","regione":"","produttore":"","vitigni":[{"nome":"","percentuale":""}],"tipologia":"","colore_hex":"#6B2737","regione_geo":{"lat":44.7,"lon":10.9,"zoom":9,"nome":""},"premi":[],"colore":{"tonalita":"","intensita":"","trasparenza":"","viscosita":""},"olfattivo":{"intensita":"","qualita":"","note_primarie":[],"note_secondarie":[],"note_terziarie":[],"descrizione":""},"gustativo":{"dolcezza":"secco","acidita_livello":"","acidita_score":65,"tannini_livello":"","tannini_qualita":"","tannini_score":78,"corpo_livello":"","corpo_score":82,"complessita_score":88,"alcol_perc":"","alcol_fonte":"","alcol_score":70,"persistenza_livello":"","persistenza_sec":"","persistenza_score":88,"equilibrio_livello":"","equilibrio_score":90,"descrizione":""},"abbinamenti":[{"cibo":"","descrizione":"","affinita":95},{"cibo":"","descrizione":"","affinita":90},{"cibo":"","descrizione":"","affinita":85},{"cibo":"","descrizione":"","affinita":80},{"cibo":"","descrizione":"","affinita":75},{"cibo":"","descrizione":"","affinita":70}],"abbinamenti_negativi":[{"cibo":"","motivo":""},{"cibo":"","motivo":""},{"cibo":"","motivo":""}],"longevita":{"stato_attuale":"In evoluzione","anno_inizio_picco":${parseInt(vintage||cy-3)+5},"anno_fine_picco":${parseInt(vintage||cy-3)+12},"anno_fine_declino":${parseInt(vintage||cy-3)+22},"descrizione":""},"conservazione":{"temperatura":"","umidita":"","posizione":"","luce":"","vibrazioni":"","anni_ancora":"","consiglio":""},"annate_comparabili":[{"anno":0,"note":""}],"difetti_potenziali":[{"difetto":"","rischio":"basso","descrizione":""}],"vinificazione":"","vinificazione_fonte":"","affinamento":"","affinamento_fonte":"","temperatura_servizio":"","decantazione":"","bicchiere":"","note_cantina":null,"note_vino":null,"contatti":{"indirizzo":null,"comune":null,"provincia":null,"sito_web":null,"telefono":null,"email":null},"immagine_bottiglia":null,"immagine_fonte":null,"nota_sommelier":""}
+{"denominazione":"","regione":"","produttore":"","vitigni":[{"nome":"","percentuale":""}],"tipologia":"","colore_hex":"#6B2737","regione_geo":{"lat":44.7,"lon":10.9,"zoom":9,"nome":""},"premi":[{"nome":"","organizzazione":"","guida":"","livello":"","anno_assegnazione":0,"annata_vino":0,"punteggio":null,"tier":"gold","descrizione":""}],"colore":{"tonalita":"","intensita":"","trasparenza":"","viscosita":""},"olfattivo":{"intensita":"","qualita":"","note_primarie":[],"note_secondarie":[],"note_terziarie":[],"descrizione":""},"gustativo":{"dolcezza":"secco","acidita_livello":"","acidita_score":65,"tannini_livello":"","tannini_qualita":"","tannini_score":78,"corpo_livello":"","corpo_score":82,"complessita_score":88,"alcol_perc":"","alcol_fonte":"","alcol_score":70,"persistenza_livello":"","persistenza_sec":"","persistenza_score":88,"equilibrio_livello":"","equilibrio_score":90,"descrizione":""},"abbinamenti":[{"cibo":"","descrizione":"","affinita":95},{"cibo":"","descrizione":"","affinita":90},{"cibo":"","descrizione":"","affinita":85},{"cibo":"","descrizione":"","affinita":80},{"cibo":"","descrizione":"","affinita":75},{"cibo":"","descrizione":"","affinita":70}],"abbinamenti_negativi":[{"cibo":"","motivo":""},{"cibo":"","motivo":""},{"cibo":"","motivo":""}],"longevita":{"stato_attuale":"In evoluzione","anno_inizio_picco":${parseInt(vintage||cy-3)+5},"anno_fine_picco":${parseInt(vintage||cy-3)+12},"anno_fine_declino":${parseInt(vintage||cy-3)+22},"descrizione":""},"conservazione":{"temperatura":"","umidita":"","posizione":"","luce":"","vibrazioni":"","anni_ancora":"","consiglio":""},"annate_comparabili":[{"anno":0,"note":""}],"difetti_potenziali":[{"difetto":"","rischio":"basso","descrizione":""}],"vinificazione":"","vinificazione_fonte":"","affinamento":"","affinamento_fonte":"","temperatura_servizio":"","decantazione":"","bicchiere":"","note_cantina":null,"note_vino":null,"contatti":{"indirizzo":null,"comune":null,"provincia":null,"sito_web":null,"telefono":null,"email":null},"immagine_bottiglia":null,"immagine_fonte":null,"nota_sommelier":""}
 Tutti gli _score: scala 0-100.
 longevita: sii REALISTICO — la stragrande maggioranza dei vini di qualità raggiunge il picco tra 5-12 anni dalla vendemmia e il declino qualitativo inizia entro 18-28 anni. Assegna longevità superiore SOLO a vini eccezionali e strutturati: grandi Barolo/Barbaresco Riserva, Brunello di Montalcino Riserva, Grands Crus di Bordeaux e Borgogna, Vintage Port, Amarone di annate eccezionali (max 40-55 anni). Per tutti gli altri vini, inclusi buoni rossi italiani, Supertuscan, Ripasso, Montepulciano d'Abruzzo ecc., mantieniti entro 20-30 anni totali. Non gonfiare le stime per sembrare più impressionante.
 vitigni: array di oggetti {nome, percentuale} con TUTTE le uve nella loro percentuale esatta; se mono-vitigno metti "100%"; non lasciare mai l'array vuoto — se non trovi la percentuale esatta stima in base alla denominazione.
 abbinamenti: fornisci SEMPRE almeno 5-6 abbinamenti gastronomici diversi e specifici (piatti concreti, non categorie generiche), ordinati per affinità decrescente. abbinamenti_negativi: almeno 2-3 abbinamenti sconsigliati con motivazione.
 vinificazione e affinamento: campi OBBLIGATORI che non devono MAI restare vuoti o generici. Priorità: 1) dati verificati dalla ricerca web 2) tua conoscenza enciclopedica come Master Sommelier — conosci i metodi produttivi dei principali vini italiani e internazionali, usala. Scrivi "Da verificare con il produttore" SOLO per vini oscuri e sconosciuti di cui non esiste documentazione pubblica. Per _fonte: "Scheda ufficiale produttore" se da ricerca web, "Guida / critica specializzata" se da articoli, "Conoscenza sommelier" se da tua base dati.
-premi: includi TUTTI i premi trovati dalla ricerca, di qualsiasi annata — non omettere assolutamente nulla. Se la ricerca non ha trovato premi ma il vino è noto, usa la tua conoscenza enciclopedica per aggiungere i riconoscimenti che sai essere stati assegnati (Tre Bicchieri storici, punteggi Parker, ecc.), indicando l'annata_vino corretta. Per ogni premio compila: nome, organizzazione, anno_assegnazione, annata_vino, descrizione. tier: "gold" per Tre Bicchieri / 95+ Parker o WS / 5 Stelle / Cinque Grappoli, "silver" per premi importanti (Due Bicchieri Rossi, 90-94 punti), "bronze" per menzioni e citazioni. Lascia [] solo se il vino è davvero sconosciuto e senza alcun riconoscimento documentabile.
+premi: includi TUTTI i premi trovati dalla ricerca, di qualsiasi livello e annata — non omettere assolutamente nulla. Se la ricerca non ha trovato premi ma il vino è noto, usa la tua conoscenza enciclopedica. Lascia [] solo se il vino è davvero sconosciuto. Per ogni premio compila tutti i campi: nome (es. "Tre Bicchieri"), organizzazione (nome della guida), guida (uno tra: "gambero_rosso","ais_vitae","bibenda","slow_wine","vini_buoni_italia","luca_maroni","parker","wine_spectator","james_suckling","decanter","vinous","altro"), livello: per gambero_rosso usa "tre_bicchieri"/"due_bicchieri_rossi"/"due_bicchieri"/"un_bicchiere"; per ais_vitae usa "quattro_viti"/"tre_viti"/"due_viti"/"una_vite"; per bibenda usa "cinque_grappoli"/"quattro_grappoli"/"tre_grappoli"/"due_grappoli"/"un_grappolo"; per slow_wine usa "chiocciola"/"bottiglia"/"grande_vino"; per vini_buoni_italia usa "corona_5stelle"/"corona_4stelle"/"corona_3stelle"/"corona_2stelle"/"corona_1stella" oppure "5stelle"/"4stelle"/"3stelle"; per guide numeriche lascia livello "" e usa il campo punteggio. punteggio: numero intero per Luca Maroni, Parker, WS, Suckling, Decanter, Vinous (es. 97). tier: "gold" per massimo riconoscimento (Tre Bicchieri, Quattro Viti, Cinque Grappoli, Chiocciola, Corona 5 Stelle, ≥95 pt), "silver" per riconoscimenti importanti (Due Bicchieri Rossi, Tre Viti, Quattro Grappoli, 90-94 pt), "bronze" per altri livelli (Due Bicchieri, Un Bicchiere, Tre Grappoli, 85-89 pt).
 note_cantina: 4-6 frasi di PURO STORYTELLING sulla CANTINA/AZIENDA: storia della famiglia o fondazione, valori e filosofia produttiva, legame col territorio, curiosità o aneddoti sull'azienda. NON inserire dati tecnici come affinamento, gradazione alcolica o descrizioni organolettiche.
 note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del nome, storia della vigna o parcella, aneddoti sulla sua creazione, elementi di unicità, citazioni del produttore. NON ripetere dati tecnici già presenti nelle altre sezioni.
 Se le informazioni di storytelling non sono disponibili lascia null.`;
@@ -1771,8 +1783,51 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   document.getElementById('sDefects').innerHTML=(d.difetti_potenziali||[]).map(df=>{const rc=df.rischio==='alto'?'risk-high':df.rischio==='medio'?'risk-medium':'risk-low';return`<div class="defect-item"><span class="defect-risk ${rc}">${df.rischio||'basso'}</span><div><div class="defect-name">${df.difetto||'—'}</div><div class="defect-desc">${df.descrizione||''}</div></div></div>`;}).join('');
   /* 09 premi */
   const awards=d.premi||[];
-  const tierMedal={gold:'🏆',silver:'🥈',bronze:'🥉'};
-  document.getElementById('sAwards').innerHTML=awards.length?awards.map(a=>{const tier=(a.tier||'silver').toLowerCase();const aVin=a.annata_vino?String(a.annata_vino):'';const isOther=aVin&&rawVintage&&aVin!==String(rawVintage);return`<div class="award-card tier-${tier}"><div class="award-medal">${tierMedal[tier]||'🎖️'}</div><div class="award-body"><div class="award-name">${a.nome||'—'}${isOther?`<span class="award-other-chip">⚠ annata ${aVin}</span>`:''}</div><div class="award-meta">${a.organizzazione||''}${a.anno_assegnazione?' · '+a.anno_assegnazione:''}</div><div class="award-desc">${a.descrizione||''}</div></div></div>`;}).join(''):'<div class="no-awards">Nessun premio trovato online per questo vino. Potrebbero esistere riconoscimenti non indicizzati — verifica direttamente sul sito del produttore o sulle guide specializzate.</div>';
+  function getAwardVisual(a){
+    const g=(a.guida||'').toLowerCase().replace(/-/g,'_');
+    const lv=(a.livello||'').toLowerCase();
+    const pt=a.punteggio;
+    if(g==='gambero_rosso'){
+      if(lv.includes('tre'))return'<span class="aw-glasses">🍷🍷🍷</span>';
+      if(lv.includes('due_bicchieri_rossi'))return'<span class="aw-glasses">🍷🍷</span>';
+      if(lv.includes('due'))return'<span class="aw-glasses aw-grey">🍷🍷</span>';
+      if(lv.includes('un'))return'<span class="aw-glasses aw-grey">🍷</span>';
+      return'<span class="aw-glasses">🍷</span>';
+    }
+    if(g==='ais_vitae'){
+      const n=lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;
+      return`<span class="aw-viti">${'🌿'.repeat(n)}</span>`;
+    }
+    if(g==='bibenda'){
+      const n=lv.includes('cinque')?5:lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;
+      return`<span class="aw-grappoli">${'🍇'.repeat(n)}</span>`;
+    }
+    if(g==='slow_wine'){
+      const ic=lv.includes('chiocciola')?'🐌':lv.includes('grande')?'⭐🍾':'🍾';
+      return`<span class="aw-slow">${ic}</span>`;
+    }
+    if(g==='vini_buoni_italia'){
+      const m=lv.match(/(\d)/);const n=m?parseInt(m[1]):5;
+      const crown=lv.includes('corona')?'👑':'';
+      return`<span class="aw-vbi">${crown}${'⭐'.repeat(n)}</span>`;
+    }
+    if(pt!==null&&pt!==undefined&&pt!==''){
+      return`<span class="aw-score-num">${pt}<span class="aw-score-pts">pt</span></span>`;
+    }
+    const tier=(a.tier||'silver').toLowerCase();
+    return tier==='gold'?'🏆':tier==='silver'?'🥈':'🥉';
+  }
+  const orgLabel={gambero_rosso:'Gambero Rosso',ais_vitae:'AIS Vitae',bibenda:'Bibenda',slow_wine:'Slow Wine',vini_buoni_italia:"Vini Buoni d'Italia",luca_maroni:'Luca Maroni',parker:'Robert Parker',wine_spectator:'Wine Spectator',james_suckling:'James Suckling',decanter:'Decanter',vinous:'Vinous'};
+  document.getElementById('sAwards').innerHTML=awards.length?awards.map(a=>{
+    const tier=(a.tier||'silver').toLowerCase();
+    const g=(a.guida||'').toLowerCase().replace(/-/g,'_');
+    const aVin=a.annata_vino?String(a.annata_vino):'';
+    const isOther=aVin&&rawVintage&&aVin!==String(rawVintage);
+    const visual=getAwardVisual(a);
+    const org=a.organizzazione||orgLabel[g]||'';
+    const meta=[org,a.anno_assegnazione?String(a.anno_assegnazione):''].filter(Boolean).join(' · ');
+    return`<div class="award-card tier-${tier}"><div class="award-medal">${visual}</div><div class="award-body"><div class="award-name">${a.nome||'—'}${isOther?`<span class="award-other-chip">⚠ annata ${aVin}</span>`:''}</div><div class="award-meta">${meta}</div>${a.descrizione?`<div class="award-desc">${a.descrizione}</div>`:''}</div></div>`;
+  }).join(''):'<div class="no-awards">Nessun premio trovato online per questo vino. Potrebbero esistere riconoscimenti non indicizzati — verifica direttamente sul sito del produttore o sulle guide specializzate.</div>';
   /* 10 produzione */
   document.getElementById('sProd').innerHTML=[{label:'Metodo di Vinificazione',value:d.vinificazione,fonte:d.vinificazione_fonte},{label:'Affinamento',value:d.affinamento,fonte:d.affinamento_fonte}].map(p=>`<div class="prod-tile"><div class="st-label">${p.label}</div><div class="st-val">${prodVal(p.value)}</div>${prodSourceChip(p.fonte)}</div>`).join('');
   /* 11 servizio */
