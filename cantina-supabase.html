@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Mia Cantina — Supabase Edition</title>
+<title>La Mia Cantina — Cloud Edition</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -22,7 +22,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--dark);color:#FFF;min-height:100vh}
 
-/* ── CLOUD BANNER ── */
+/* ── SERVER BANNER ── */
 .server-banner{
   display:none;padding:.45rem 2rem;font-size:.72rem;font-weight:500;
   text-align:center;letter-spacing:.04em;
@@ -237,11 +237,10 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .pdf-drop-text{font-size:.78rem;color:rgba(255,255,255,.38)}
 .pdf-drop.has-file .pdf-drop-text{color:rgba(100,220,100,.8)}
 
-/* ── SETTINGS MODAL ── */
+/* ── API KEY MODAL ── */
 .apikey-info{font-size:.78rem;color:rgba(255,255,255,.52);line-height:1.65;margin-bottom:1rem}
 .apikey-info a{color:var(--gold);text-decoration:none}
 .apikey-info a:hover{text-decoration:underline}
-.settings-section-title{font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1px solid rgba(201,168,76,.15)}
 
 /* ── TOAST ── */
 .toast-container{position:fixed;bottom:1.3rem;right:1.3rem;display:flex;flex-direction:column;gap:.42rem;z-index:9999}
@@ -263,10 +262,17 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   border-bottom:1px solid rgba(201,168,76,.2);
   position:sticky;top:0;z-index:10;
 }
-.scheda-wine-label{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scheda-wine-label{
+  font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);
+  flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
 .scheda-toolbar-btns{display:flex;gap:.5rem;align-items:center}
 
-.scheda-loader{display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;padding:5rem 2rem}
+/* Loader scheda */
+.scheda-loader{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:1.2rem;padding:5rem 2rem;
+}
 .scheda-loader.show{display:flex}
 .scheda-spin{width:48px;height:48px;border-radius:50%;border:3px solid rgba(201,168,76,.18);border-top-color:var(--gold);animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -276,9 +282,10 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .slp.done{border-color:rgba(22,163,74,.4);color:#4ADE80;background:rgba(22,163,74,.08)}
 .scheda-loader-msg{font-size:.82rem;color:rgba(255,255,255,.4)}
 
+/* Card wrapper */
 #schedaCardArea{display:none;padding:2rem 1rem 5rem}
 
-/* ── WINE CARD ── */
+/* ── WINE CARD (da vinai.html) ── */
 #wineCard{max-width:940px;margin:0 auto;background:#FFFDF9;border-radius:4px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.08)}
 .card-header{background:linear-gradient(150deg,#2A0E18 0%,#5C2030 55%,#7A3045 100%);padding:3rem 3rem 2.5rem;position:relative;overflow:hidden}
 .card-header::before{content:'';position:absolute;top:-80px;right:-80px;width:340px;height:340px;background:radial-gradient(circle,rgba(201,168,76,.12) 0%,transparent 65%);pointer-events:none}
@@ -317,9 +324,11 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .sec-title span{font-family:'Inter',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
 .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(107,39,55,.25),transparent)}
 
+/* Map */
 .map-container{height:200px;border-radius:10px;overflow:hidden;border:1px solid var(--gray-200)}
 .map-label{font-size:.75rem;color:var(--gray-500);margin-top:.5rem;text-align:center}
 
+/* Stat tiles */
 .stat-grid-c{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
 .stat-tile{background:var(--gray-100);border-radius:9px;padding:.95rem 1rem;border-left:3px solid var(--wine)}
 .stat-tile .st-label{font-size:.62rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.28rem}
@@ -329,6 +338,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .src-web{background:rgba(59,130,246,.1);color:#1e40af;border:1px solid rgba(59,130,246,.2)}
 .src-estimate{background:rgba(234,179,8,.1);color:#854d0e;border:1px solid rgba(234,179,8,.2)}
 
+/* Aroma */
 .aroma-row{display:flex;gap:.85rem;margin-bottom:1.1rem;flex-wrap:wrap}
 .aroma-stat{flex:1;min-width:140px;background:var(--gray-100);border-radius:9px;padding:.85rem 1rem;border-left:3px solid var(--gold)}
 .aroma-stat .st-label{font-size:.62rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.28rem}
@@ -342,6 +352,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .tag-tertiary{background:rgba(74,58,46,.07);color:var(--gray-700);border:1px solid rgba(74,58,46,.15)}
 .aroma-desc{font-size:.875rem;line-height:1.8;color:var(--gray-500);font-style:italic;margin-top:1rem}
 
+/* Structure bars */
 .struct-item{margin-bottom:1rem}
 .struct-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.35rem}
 .struct-name{font-size:.78rem;font-weight:600;color:var(--gray-700)}
@@ -350,6 +361,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .bar-fill{height:100%;background:linear-gradient(to right,var(--wine-mid),var(--wine-light));border-radius:3px;transition:width .8s ease}
 .radar-wrap{position:relative;height:280px;margin-top:1.5rem}
 
+/* Pairings */
 .pairs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;margin-bottom:1rem}
 .pair-card{background:var(--gray-100);border-radius:9px;padding:.95rem 1rem;border-left:3px solid var(--gold)}
 .pair-food{font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:.25rem}
@@ -364,6 +376,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .neg-food{font-size:.82rem;font-weight:600;color:var(--wine);min-width:140px}
 .neg-reason{font-size:.78rem;color:var(--gray-500)}
 
+/* Longevity */
 .long-state{display:inline-block;padding:.35rem 1rem;border-radius:20px;font-size:.78rem;font-weight:600;letter-spacing:.05em;margin-bottom:1rem}
 .ls-evolving{background:rgba(234,179,8,.1);color:#92400e;border:1px solid rgba(234,179,8,.25)}
 .ls-peak{background:rgba(22,163,74,.1);color:#166534;border:1px solid rgba(22,163,74,.2)}
@@ -373,17 +386,20 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .long-sim-bar input{padding:.38rem .6rem;border:1px solid var(--gray-200);border-radius:6px;font-size:.82rem;color:var(--text);width:90px;background:var(--gray-100)}
 .long-sim-note{font-size:.68rem;color:var(--gray-400);margin-top:.25rem}
 
+/* Storage tiles */
 .storage-grid-c{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-top:1rem}
 .storage-tile{background:var(--gray-100);border-radius:9px;padding:.85rem 1rem;text-align:center}
 .storage-icon{font-size:1.4rem;margin-bottom:.35rem}
 .storage-label{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.2rem}
 .storage-val{font-size:.82rem;font-weight:600;color:var(--text)}
 
+/* Vintages */
 .vintages-grid{display:flex;flex-wrap:wrap;gap:.75rem}
 .vintage-card{background:var(--gray-100);border-radius:9px;padding:.75rem 1rem;min-width:120px;border-left:3px solid var(--wine-light)}
 .vintage-year{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--wine);margin-bottom:.2rem}
 .vintage-note{font-size:.75rem;color:var(--gray-500);line-height:1.45}
 
+/* Defects */
 .defect-item{display:flex;align-items:flex-start;gap:.85rem;padding:.75rem 0;border-bottom:1px solid var(--gray-200)}
 .defect-item:last-child{border-bottom:none}
 .defect-risk{padding:.2rem .55rem;border-radius:4px;font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;margin-top:.1rem}
@@ -393,6 +409,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .defect-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.18rem}
 .defect-desc{font-size:.75rem;color:var(--gray-500);line-height:1.45}
 
+/* Awards */
 .award-card{display:flex;align-items:flex-start;gap:1rem;padding:1rem;border-radius:9px;margin-bottom:.75rem;border:1px solid var(--gray-200)}
 .award-card:last-child{margin-bottom:0}
 .tier-gold{background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.3)}
@@ -405,17 +422,20 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .award-other-chip{display:inline-block;margin-left:.4rem;padding:.1rem .4rem;background:rgba(234,179,8,.12);border-radius:4px;font-size:.6rem;color:#92400e;font-weight:600}
 .no-awards{font-size:.82rem;color:var(--gray-400);font-style:italic;padding:.5rem 0}
 
+/* Production */
 .prod-tile{background:var(--gray-100);border-radius:9px;padding:1rem;margin-bottom:.85rem;border-left:3px solid var(--wine)}
 .prod-tile:last-child{margin-bottom:0}
 .prod-tile .st-label{font-size:.62rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.4rem}
 .prod-tile .st-val{font-size:.875rem;color:var(--text);line-height:1.6}
 
+/* Serving */
 .serve-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
 .serve-tile{background:var(--gray-100);border-radius:9px;padding:.85rem 1rem;text-align:center}
 .serve-icon{font-size:1.5rem;margin-bottom:.35rem}
 .serve-label{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.2rem}
 .serve-val{font-size:.82rem;font-weight:600;color:var(--text)}
 
+/* Storia & contatti */
 .storia-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
 .storia-block{background:var(--gray-100);border-radius:9px;padding:1.1rem}
 .storia-block.full{grid-column:1/-1}
@@ -430,11 +450,12 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .contatti-item a{color:var(--wine);text-decoration:none}
 .contatti-item a:hover{text-decoration:underline}
 
+/* Data source badge */
 .dsrc-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.22rem .65rem;border-radius:5px;font-size:.65rem;font-weight:600;letter-spacing:.05em}
 .dsrc-web{background:rgba(59,130,246,.1);color:#1e40af;border:1px solid rgba(59,130,246,.2)}
 .dsrc-ai{background:rgba(234,179,8,.08);color:#92400e;border:1px solid rgba(234,179,8,.2)}
 
-/* ── PRINT ── */
+/* ── PRINT — lista vini (scheda NON aperta) ── */
 @media print{
   body:not(.scheda-open) .app-header,
   body:not(.scheda-open) .server-banner,
@@ -452,8 +473,21 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   body:not(.scheda-open) tbody td{color:#2C1810!important}
   body:not(.scheda-open) .badge{border:1px solid #aaa!important;color:#333!important;background:#f5f0eb!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body:not(.scheda-open) .main-content{padding:0}
-  body:not(.scheda-open) .td-cantina,body:not(.scheda-open) .td-annata,body:not(.scheda-open) .td-price,body:not(.scheda-open) .td-value,body:not(.scheda-open) .td-date,body:not(.scheda-open) .td-note{color:#444!important}
-  body.scheda-open .app-header,body.scheda-open .server-banner,body.scheda-open .stats-row,body.scheda-open .main-content,body.scheda-open .modal-overlay,body.scheda-open .toast-container,body.scheda-open .scheda-toolbar{display:none!important}
+  body:not(.scheda-open) .td-cantina,
+  body:not(.scheda-open) .td-annata,
+  body:not(.scheda-open) .td-price,
+  body:not(.scheda-open) .td-value,
+  body:not(.scheda-open) .td-date,
+  body:not(.scheda-open) .td-note{color:#444!important}
+
+  /* ── PRINT — scheda VinAi (scheda aperta) ── */
+  body.scheda-open .app-header,
+  body.scheda-open .server-banner,
+  body.scheda-open .stats-row,
+  body.scheda-open .main-content,
+  body.scheda-open .modal-overlay,
+  body.scheda-open .toast-container,
+  body.scheda-open .scheda-toolbar{display:none!important}
   body.scheda-open #schedaOverlay{position:static!important;display:block!important;overflow:visible!important}
   body.scheda-open #schedaCardArea{display:block!important}
   body.scheda-open .scheda-loader{display:none!important}
@@ -482,7 +516,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 </head>
 <body>
 
-<!-- CLOUD BANNER -->
+<!-- SERVER BANNER -->
 <div class="server-banner" id="serverBanner">
   <span class="srv-dot"></span><span id="serverBannerText"></span>
 </div>
@@ -491,11 +525,11 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 <header class="app-header">
   <div>
     <div class="brand-logo">La Mia <em>Cantina</em></div>
-    <div class="brand-tag">Supabase Cloud · Gestione &amp; Inventario Vini</div>
+    <div class="brand-tag">Cloud Edition · Supabase + Perplexity</div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-ghost" onclick="openSettings()" title="Impostazioni">⚙️ Impostazioni</button>
-    <button class="btn btn-ghost" onclick="printList()" title="Stampa lista">🖨️ Stampa</button>
+    <button class="btn btn-ghost" onclick="openSettings()" title="Impostazioni Supabase + Perplexity">⚙️ Impostazioni</button>
+    <button class="btn btn-ghost" onclick="printList()" title="Stampa lista corrente">🖨️ Stampa</button>
     <button class="btn btn-ghost" onclick="exportExcel()">⬇ Esporta</button>
     <button class="btn btn-warn"  onclick="openResetConfirm()">🗑 Reset DB</button>
     <button class="btn btn-gold"  onclick="openImportModal()">⬆ Importa Excel</button>
@@ -568,6 +602,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 
 <!-- ══ SCHEDA OVERLAY ══ -->
 <div id="schedaOverlay">
+  <!-- Toolbar -->
   <div class="scheda-toolbar">
     <button class="btn btn-ghost" onclick="closeScheda()" style="flex-shrink:0">← Cantina</button>
     <div class="scheda-wine-label" id="schedaWineLabel"></div>
@@ -576,6 +611,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     </div>
   </div>
 
+  <!-- Loader -->
   <div class="scheda-loader" id="schedaLoader">
     <div class="scheda-spin"></div>
     <div class="scheda-loader-phases">
@@ -586,8 +622,11 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     <div class="scheda-loader-msg" id="schedaLoaderMsg">Avvio generazione…</div>
   </div>
 
+  <!-- Card area -->
   <div id="schedaCardArea">
     <div id="wineCard">
+
+      <!-- HEADER -->
       <div class="card-header">
         <div class="header-inner">
           <div class="header-content">
@@ -621,31 +660,44 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
       </div>
       <div class="color-strip" id="colorStrip"></div>
 
+      <!-- BODY -->
       <div class="card-body">
+
+        <!-- 01 Mappa -->
         <div class="section">
           <div class="sec-title">01 <span>Origine Geografica</span></div>
           <div class="map-container" id="wineMap"></div>
           <div class="map-label" id="mapLabel"></div>
         </div>
+
+        <!-- 02 Sensoriale -->
         <div class="section">
           <div class="sec-title">02 <span>Profilo Sensoriale</span></div>
           <div class="stat-grid-c" id="sStatGrid"></div>
         </div>
+
+        <!-- 03 Olfattivo -->
         <div class="section">
           <div class="sec-title">03 <span>Profilo Olfattivo</span></div>
           <div id="sAroma"></div>
         </div>
+
+        <!-- 04 Struttura + radar -->
         <div class="section">
           <div class="sec-title">04 <span>Struttura Gustativa</span></div>
           <div id="sStruct"></div>
           <p class="aroma-desc" id="sPalateDesc"></p>
           <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
         </div>
+
+        <!-- 05 Abbinamenti -->
         <div class="section">
           <div class="sec-title">05 <span>Abbinamenti</span></div>
           <div class="pairs-grid" id="sPairs"></div>
           <div id="sNegPairs"></div>
         </div>
+
+        <!-- 06 Longevità -->
         <div class="section">
           <div class="sec-title">06 <span>Longevità &amp; Conservazione</span></div>
           <div id="sLongState"></div>
@@ -661,38 +713,53 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
           <div class="storage-grid-c" id="sStorageGrid"></div>
           <p style="font-size:.8rem;color:var(--gray-500);margin-top:.75rem" id="sStorageAdvice"></p>
         </div>
+
+        <!-- 07 Annate comparabili -->
         <div class="section">
           <div class="sec-title">07 <span>Annate Comparabili</span></div>
           <div class="vintages-grid" id="sVintages"></div>
         </div>
+
+        <!-- 08 Difetti -->
         <div class="section">
           <div class="sec-title">08 <span>Difetti Potenziali</span></div>
           <div id="sDefects"></div>
         </div>
+
+        <!-- 09 Premi -->
         <div class="section">
           <div class="sec-title">09 <span>Premi &amp; Riconoscimenti</span></div>
           <div id="sAwards"></div>
         </div>
+
+        <!-- 10 Produzione -->
         <div class="section">
           <div class="sec-title">10 <span>Metodo Produttivo</span></div>
           <div id="sProd"></div>
         </div>
+
+        <!-- 11 Servizio -->
         <div class="section">
           <div class="sec-title">11 <span>Temperatura &amp; Servizio</span></div>
           <div class="serve-grid" id="sServe"></div>
         </div>
+
+        <!-- 12 Storia -->
         <div class="section" id="sStoriaSec" style="display:none">
           <div class="sec-title">12 <span>Storia &amp; Contatti</span></div>
           <div id="sStoriaContent"></div>
         </div>
+
+        <!-- Nota sommelier -->
         <div class="section">
           <div class="sec-title">Nota del Sommelier</div>
           <p class="aroma-desc" id="sSommNote"></p>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+
+      </div><!-- /card-body -->
+    </div><!-- /wineCard -->
+  </div><!-- /schedaCardArea -->
+</div><!-- /schedaOverlay -->
 
 
 <!-- ══ ADD / EDIT MODAL ══ -->
@@ -727,7 +794,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <div class="field-hint">URL della pagina del vino sul sito ufficiale del produttore — migliora la precisione della scheda tecnica.</div>
       </div>
       <div class="field">
-        <label>Scheda Tecnica PDF <span style="font-weight:400;color:rgba(255,255,255,.3);font-size:.58rem;letter-spacing:0;text-transform:none">(opzionale)</span></label>
+        <label>Scheda Tecnica PDF <span style="font-weight:400;color:rgba(255,255,255,.3);font-size:.58rem;letter-spacing:0;text-transform:none">(opzionale — verrà usata per la generazione)</span></label>
         <label class="pdf-drop" id="pdfDrop" for="f-pdf">
           <input type="file" id="f-pdf" accept=".pdf,.txt" style="display:none" onchange="handlePdfSelect(this)">
           <span class="pdf-drop-icon">📄</span>
@@ -837,48 +904,38 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 </div>
 
 
-<!-- ══ SETTINGS ══ -->
+<!-- ══ SETTINGS (API KEY) ══ -->
 <div class="modal-overlay" id="settingsModal">
-  <div class="modal" style="max-width:520px">
+  <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title">⚙️ Impostazioni</div>
       <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
     </div>
     <div class="modal-body">
-
-      <div class="settings-section-title">☁️ Database Cloud — Supabase</div>
       <p class="apikey-info">
-        Crea un progetto gratuito su <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a>, poi incolla qui URL e chiave anonima.<br>
-        Senza Supabase i dati vengono salvati <em>solo nel browser</em> e non sono disponibili su altri dispositivi.
+        Configura Supabase per il salvataggio cloud e Perplexity per le schede tecniche.<br>
+        Tutte le credenziali sono salvate solo nel tuo browser e non vengono mai condivise.
       </p>
       <div class="field">
         <label>Supabase Project URL</label>
-        <input type="url" id="s-supabase-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
-        <div class="field-hint">Trovi questo valore in: Supabase Dashboard → Settings → API → Project URL</div>
+        <input type="text" id="s-supabase-url" placeholder="https://xxxx.supabase.co">
+        <div class="field-hint"><a href="https://supabase.com/dashboard" target="_blank" rel="noopener" style="color:var(--gold)">→ Supabase Dashboard</a> · Settings → API → Project URL</div>
       </div>
       <div class="field">
         <label>Supabase Anon Key</label>
-        <input type="password" id="s-supabase-anon" placeholder="eyJhbGci…">
-        <div class="field-hint">Chiave "anon public" — sicura da usare nel browser. Trovi in: Settings → API → Project API Keys</div>
+        <input type="password" id="s-supabase-anon" placeholder="eyJ…">
+        <div class="field-hint">Settings → API → Project API Keys → anon / public</div>
       </div>
-
       <div class="form-divider"></div>
-
-      <div class="settings-section-title">🔍 Schede Tecniche — Perplexity</div>
-      <p class="apikey-info">
-        Necessaria per generare le schede tecniche con ricerca web in tempo reale.<br>
-        La chiave viene salvata solo nel tuo browser.<br>
-        <a href="https://www.perplexity.ai/settings/api" target="_blank" rel="noopener">→ Ottieni una chiave API Perplexity</a>
-      </p>
       <div class="field">
         <label>Perplexity API Key</label>
         <input type="password" id="s-apikey" placeholder="pplx-…">
+        <div class="field-hint"><a href="https://www.perplexity.ai/settings/api" target="_blank" rel="noopener" style="color:var(--gold)">→ Ottieni una chiave API Perplexity</a> (per generare le schede tecniche)</div>
       </div>
-
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('settingsModal')">Annulla</button>
-      <button class="btn btn-primary" onclick="saveSettings()">💾 Salva &amp; Connetti</button>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Salva</button>
     </div>
   </div>
 </div>
@@ -887,103 +944,97 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
+
 <script>
 /* ══════════════════════════════════════════════════════
-   SUPABASE CLIENT + LOCALSTORAGE FALLBACK
+   SERVER API + LOCALSTORAGE FALLBACK
 ══════════════════════════════════════════════════════ */
-const LS_KEY     = 'cantina_supabase_v1';
-const SB_URL_KEY = 'cantina_supabase_url';
-const SB_ANON_KEY= 'cantina_supabase_anon';
-let   _sbClient  = null;
-let   supabaseOk = false;
+/* ── SUPABASE CONFIG ── */
+const LS_KEY      = 'cantina_supabase_v1';
+const SB_URL_KEY  = 'cantina_supabase_url';
+const SB_ANON_KEY = 'cantina_supabase_anon';
+let _sbClient = null;
+let supabaseOk = false;
+
+function newId() { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
 
 function getSupabaseClient() {
   const url  = localStorage.getItem(SB_URL_KEY);
   const anon = localStorage.getItem(SB_ANON_KEY);
-  if (!url || !anon) { _sbClient = null; return null; }
+  if (!url||!anon) { _sbClient=null; return null; }
   if (!_sbClient) {
     try { _sbClient = window.supabase.createClient(url, anon); }
-    catch(e) { console.error('Supabase init error', e); _sbClient = null; }
+    catch(e) { console.error('Supabase init error',e); _sbClient=null; }
   }
   return _sbClient;
 }
 
 async function initSupabase() {
-  _sbClient = null; // forza re-init con credenziali aggiornate
-  const client = getSupabaseClient();
+  _sbClient = null;
+  const cl = getSupabaseClient();
   const ban = document.getElementById('serverBanner');
   const txt = document.getElementById('serverBannerText');
-  if (!client) {
+  if (!cl) {
     supabaseOk = false;
     ban.className = 'server-banner offline';
-    txt.textContent = '☁️ Supabase non configurato — dati salvati nel browser. Apri ⚙️ Impostazioni per collegare il database cloud.';
+    txt.textContent = '☁️ Supabase non configurato — dati salvati nel browser. Clicca ⚙️ per configurare.';
     return;
   }
   try {
-    const { error } = await client.from('wines').select('id').limit(1);
+    const { error } = await cl.from('wines').select('id').limit(1);
     supabaseOk = !error;
-    if (error) console.warn('Supabase test query error:', error.message);
-  } catch(e) { supabaseOk = false; console.warn('Supabase connection error:', e); }
-  ban.className = 'server-banner ' + (supabaseOk ? 'online' : 'offline');
+  } catch(e) { supabaseOk = false; }
+  ban.className = 'server-banner '+(supabaseOk?'online':'offline');
   txt.textContent = supabaseOk
-    ? '☁️ Supabase connesso — dati sincronizzati nel cloud'
-    : '⚠️ Errore connessione Supabase — verifica URL e chiave in ⚙️ Impostazioni. Dati salvati nel browser.';
+    ? '☁️ Supabase connesso — dati sincronizzati nel cloud in tempo reale'
+    : '⚠️ Errore connessione Supabase — verifica le credenziali in ⚙️';
 }
 
-/* ── LocalStorage helpers ── */
+/* LocalStorage helpers (fallback) */
 function lsLoad()       { try { return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch { return []; } }
 function lsSave(d)      { localStorage.setItem(LS_KEY, JSON.stringify(d)); }
-function newId()        { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
 function lsAdd(w)       { const d=lsLoad(); w.id=newId(); w.createdAt=Date.now(); d.push(w); lsSave(d); return w; }
 function lsUpdate(id,p) { const d=lsLoad(); const i=d.findIndex(w=>w.id===id); if(i===-1)return; d[i]={...d[i],...p,updatedAt:Date.now()}; lsSave(d); }
 function lsDelete(id)   { lsSave(lsLoad().filter(w=>w.id!==id)); }
 
-/* ── Async DB API — Supabase con fallback localStorage ── */
+/* Async DB API — Supabase con fallback localStorage */
 async function dbLoad() {
-  const cl = getSupabaseClient();
-  if (!cl) return lsLoad();
+  const cl=getSupabaseClient(); if(!cl) return lsLoad();
   try {
-    const { data, error } = await cl.from('wines').select('*');
-    if (error) throw error;
-    return data.map(r => ({ id: r.id, createdAt: r.created_at, ...r.wine_data }));
-  } catch(e) { console.warn('dbLoad fallback to localStorage:', e.message); return lsLoad(); }
+    const {data,error}=await cl.from('wines').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    return data.map(r=>({id:r.id, createdAt:r.created_at, ...r.wine_data}));
+  } catch(e) { console.warn('dbLoad fallback:',e.message); return lsLoad(); }
 }
-
 async function dbAdd(wine) {
-  const cl = getSupabaseClient();
-  const id = newId(), ts = Date.now();
-  if (!cl) return lsAdd(wine);
+  const cl=getSupabaseClient(); const id=newId(), ts=Date.now();
+  if(!cl) return lsAdd(wine);
   try {
-    const { error } = await cl.from('wines').insert({ id, wine_data: wine, created_at: ts });
-    if (error) throw error;
-    return { id, createdAt: ts, ...wine };
-  } catch(e) { console.warn('dbAdd fallback:', e.message); return lsAdd(wine); }
+    const {error}=await cl.from('wines').insert({id, wine_data:wine, created_at:ts});
+    if(error) throw error;
+    return {id, createdAt:ts, ...wine};
+  } catch(e) { console.warn('dbAdd fallback:',e.message); return lsAdd(wine); }
 }
-
 async function dbUpdate(id, patch) {
-  const cl = getSupabaseClient();
-  if (!cl) { lsUpdate(id, patch); return; }
+  const cl=getSupabaseClient(); if(!cl) { lsUpdate(id,patch); return; }
   try {
-    const { data: row, error: e1 } = await cl.from('wines').select('wine_data').eq('id', id).single();
-    if (e1) throw e1;
-    const updated = { ...(row.wine_data||{}), ...patch, updatedAt: Date.now() };
-    const { error: e2 } = await cl.from('wines').update({ wine_data: updated }).eq('id', id);
-    if (e2) throw e2;
-  } catch(e) { console.warn('dbUpdate fallback:', e.message); lsUpdate(id, patch); }
+    const {data:row,error:e1}=await cl.from('wines').select('wine_data').eq('id',id).single();
+    if(e1) throw e1;
+    const updated={...(row.wine_data||{}), ...patch, updatedAt:Date.now()};
+    const {error:e2}=await cl.from('wines').update({wine_data:updated}).eq('id',id);
+    if(e2) throw e2;
+  } catch(e) { console.warn('dbUpdate fallback:',e.message); lsUpdate(id,patch); }
 }
-
 async function dbDelete(id) {
-  const cl = getSupabaseClient();
-  if (!cl) { lsDelete(id); return; }
+  const cl=getSupabaseClient(); if(!cl) { lsDelete(id); return; }
   try {
-    const { error } = await cl.from('wines').delete().eq('id', id);
-    if (error) throw error;
-  } catch(e) { console.warn('dbDelete fallback:', e.message); lsDelete(id); }
+    const {error}=await cl.from('wines').delete().eq('id',id);
+    if(error) throw error;
+  } catch(e) { console.warn('dbDelete fallback:',e.message); lsDelete(id); }
 }
-
 async function dbReset() {
-  const cl = getSupabaseClient();
-  if (cl) { try { await cl.from('wines').delete().neq('id', ''); } catch(e) { console.warn('dbReset error:', e.message); } }
+  const cl=getSupabaseClient();
+  if(cl) { try { await cl.from('wines').delete().neq('id',''); } catch(e) { console.warn('dbReset:',e.message); } }
   localStorage.removeItem(LS_KEY);
 }
 
@@ -1005,10 +1056,10 @@ async function updateStats() {
   const remain = wines.reduce((s,w)=>s+(Number(w.qtRimasta)||0),0);
   const drunk  = wines.reduce((s,w)=>s+Math.max(0,(Number(w.qtTotale)||0)-(Number(w.qtRimasta)||0)),0);
   const value  = wines.reduce((s,w)=>s+(Number(w.qtRimasta)||0)*(Number(w.prezzoAcquisto)||0),0);
-  document.getElementById('stat-total').textContent     = total;
+  document.getElementById('stat-total').textContent    = total;
   document.getElementById('stat-remaining').textContent = remain;
-  document.getElementById('stat-drunk').textContent     = drunk;
-  document.getElementById('stat-value').textContent     = '€ '+value.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0});
+  document.getElementById('stat-drunk').textContent    = drunk;
+  document.getElementById('stat-value').textContent    = '€ '+value.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0});
 }
 
 
@@ -1054,13 +1105,13 @@ async function renderTable() {
     if (w.bevuto)                           badge='<span class="badge badge-bev">Bevuto</span>';
     else if (rimasta<totale && rimasta>0)   badge='<span class="badge badge-part">Parziale</span>';
     else                                    badge='<span class="badge badge-cant">Cantina</span>';
-    const dataBevuta = w.dataBevuta ? new Date(w.dataBevuta).toLocaleDateString('it-IT') : '—';
-    const prezzoStr  = w.prezzoAcquisto ? '€ '+Number(w.prezzoAcquisto).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
-    const valoreStr  = valore>0 ? '€ '+valore.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
-    const noteCell   = w.note ? `<span title="${esc(w.note)}">${esc(w.note)}</span>` : '<span style="opacity:.28">—</span>';
-    const drinkBtn   = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">🍷</button>` : '';
-    const apiKey     = localStorage.getItem('cantina_perplexity_apikey')||'';
-    const schedaTip  = apiKey ? 'Genera Scheda Tecnica (Perplexity)' : 'Imposta API Key Perplexity in ⚙️ per generare la scheda';
+    const dataBevuta    = w.dataBevuta ? new Date(w.dataBevuta).toLocaleDateString('it-IT') : '—';
+    const prezzoStr     = w.prezzoAcquisto ? '€ '+Number(w.prezzoAcquisto).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+    const valoreStr     = valore>0 ? '€ '+valore.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
+    const noteCell      = w.note ? `<span title="${esc(w.note)}">${esc(w.note)}</span>` : '<span style="opacity:.28">—</span>';
+    const drinkBtn      = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">🍷</button>` : '';
+    const apiKey        = localStorage.getItem('cantina_perplexity_apikey')||'';
+    const schedaTitle   = apiKey ? 'Genera Scheda Tecnica (Perplexity)' : 'Imposta API Key Perplexity in ⚙️ per generare la scheda';
     return `<tr>
       <td class="td-cantina">${esc(w.cantina||'—')}</td>
       <td class="td-nome">${esc(w.nome||'—')}</td>
@@ -1074,10 +1125,10 @@ async function renderTable() {
       <td class="td-note">${noteCell}</td>
       <td>
         <div class="td-actions">
-          <button class="icon-btn ib-scheda" title="${schedaTip}" onclick="openScheda('${id}')">📄</button>
-          <button class="icon-btn ib-edit"   title="Modifica"     onclick="openEditModal('${id}')">✏️</button>
+          <button class="icon-btn ib-scheda" title="${schedaTitle}" onclick="openScheda('${id}')">📄</button>
+          <button class="icon-btn ib-edit"   title="Modifica"       onclick="openEditModal('${id}')">✏️</button>
           ${drinkBtn}
-          <button class="icon-btn ib-del"    title="Elimina"      onclick="openDeleteConfirm('${id}')">🗑️</button>
+          <button class="icon-btn ib-del"    title="Elimina"        onclick="openDeleteConfirm('${id}')">🗑️</button>
         </div>
       </td>
     </tr>`;
@@ -1143,21 +1194,21 @@ async function openEditModal(id) {
   const wines = await dbLoad();
   const wine  = wines.find(w=>w.id===id); if(!wine)return;
   clearForm();
-  document.getElementById('modalTitle').textContent   = 'Modifica Vino';
-  document.getElementById('editId').value             = id;
-  document.getElementById('f-cantina').value          = wine.cantina         ||'';
-  document.getElementById('f-nome').value             = wine.nome            ||'';
-  document.getElementById('f-annata').value           = wine.annata          ||'';
-  document.getElementById('f-qtTotale').value         = wine.qtTotale  !=null? wine.qtTotale  :'';
-  document.getElementById('f-qtRimasta').value        = wine.qtRimasta !=null? wine.qtRimasta :'';
-  document.getElementById('f-prezzo').value           = wine.prezzoAcquisto  !=null? wine.prezzoAcquisto :'';
-  document.getElementById('f-dataBevuta').value       = wine.dataBevuta      ||'';
-  document.getElementById('f-note').value             = wine.note            ||'';
-  document.getElementById('f-luogo').value            = wine.luogoAcquisto   ||'';
-  document.getElementById('f-dataAcquisto').value     = wine.dataAcquisto    ||'';
-  document.getElementById('f-url').value              = wine.urlRiferimento  ||'';
-  document.getElementById('f-bevuto').checked         = !!wine.bevuto;
-  document.getElementById('bevutoLabel').textContent  = wine.bevuto?'Bevuto — bottiglia terminata':'In Cantina';
+  document.getElementById('modalTitle').textContent='Modifica Vino';
+  document.getElementById('editId').value           = id;
+  document.getElementById('f-cantina').value        = wine.cantina         ||'';
+  document.getElementById('f-nome').value           = wine.nome            ||'';
+  document.getElementById('f-annata').value         = wine.annata          ||'';
+  document.getElementById('f-qtTotale').value       = wine.qtTotale  !=null? wine.qtTotale  :'';
+  document.getElementById('f-qtRimasta').value      = wine.qtRimasta !=null? wine.qtRimasta :'';
+  document.getElementById('f-prezzo').value         = wine.prezzoAcquisto  !=null? wine.prezzoAcquisto :'';
+  document.getElementById('f-dataBevuta').value     = wine.dataBevuta      ||'';
+  document.getElementById('f-note').value           = wine.note            ||'';
+  document.getElementById('f-luogo').value          = wine.luogoAcquisto   ||'';
+  document.getElementById('f-dataAcquisto').value   = wine.dataAcquisto    ||'';
+  document.getElementById('f-url').value            = wine.urlRiferimento  ||'';
+  document.getElementById('f-bevuto').checked       = !!wine.bevuto;
+  document.getElementById('bevutoLabel').textContent= wine.bevuto?'Bevuto — bottiglia terminata':'In Cantina';
   openModal('wineModal');
 }
 
@@ -1244,7 +1295,7 @@ async function confirmDrink() {
 
 
 /* ══════════════════════════════════════════════════════
-   IMPORT EXCEL
+   IMPORT EXCEL — FIX: normalizzazione accenti + quantità
 ══════════════════════════════════════════════════════ */
 const COL_ALIASES = {
   cantina:        ['cantina','winery','azienda','produttore','producer'],
@@ -1260,22 +1311,42 @@ const COL_ALIASES = {
   note:           ['note','notes','commento','osservazioni','descrizione'],
 };
 
+/* Normalizza: lowercase + rimuovi accenti + rimpiazza separatori */
 function normK(s) {
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[_\-\.]/g,' ').trim();
+  return String(s||'').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[_\-\.]/g,' ').trim();
 }
+
 function detectCols(headers) {
   const map={};
   headers.forEach((h,i)=>{
     const n=normK(h);
     for(const [field,aliases] of Object.entries(COL_ALIASES)){
-      if(!(field in map) && aliases.some(a=>n===a||n.startsWith(a+' ')||n.startsWith(a+'/'))) map[field]=i;
+      if(!(field in map) && aliases.some(a=>n===a||n.startsWith(a+' ')||n.startsWith(a+'/')))
+        map[field]=i;
     }
   });
   return map;
 }
-function parseBool(v) { return ['si','sì','yes','1','true','x','vero','y'].includes(String(v||'').toLowerCase().trim()); }
-function parseNum(v,fallback=0) { if(v===null||v===undefined||v==='')return fallback; const n=parseFloat(String(v).replace(',','.')); return isNaN(n)?fallback:n; }
-function parseDate(v) { if(!v)return null; if(v instanceof Date&&!isNaN(v))return v.toISOString().split('T')[0]; const d=new Date(v); if(!isNaN(d))return d.toISOString().split('T')[0]; return null; }
+
+function parseBool(v) { return ['si','si','yes','1','true','x','vero','y'].includes(String(v||'').toLowerCase().trim()); }
+
+/* Parsing numerico robusto: gestisce virgola decimale e celle vuote */
+function parseNum(v, fallback=0) {
+  if(v===null||v===undefined||v==='') return fallback;
+  const n = parseFloat(String(v).replace(',','.'));
+  return isNaN(n) ? fallback : n;
+}
+
+/* Parsing data robusto */
+function parseDate(v) {
+  if(!v) return null;
+  if(v instanceof Date && !isNaN(v)) return v.toISOString().split('T')[0];
+  const d = new Date(v);
+  if(!isNaN(d)) return d.toISOString().split('T')[0];
+  return null;
+}
 
 function openImportModal() {
   importData=null;
@@ -1294,9 +1365,9 @@ function handleImportFile(input) {
   const reader=new FileReader();
   reader.onload=e=>{
     try {
-      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      const ws=wb.Sheets[wb.SheetNames[0]];
-      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      const wb  = XLSX.read(e.target.result,{type:'array',cellDates:true});
+      const ws  = wb.Sheets[wb.SheetNames[0]];
+      const rows= XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
       if(rows.length<2){showToast('File vuoto o privo di dati','error');return;}
       const headers=rows[0].map(String);
       const cm=detectCols(headers);
@@ -1304,20 +1375,21 @@ function handleImportFile(input) {
       for(let i=1;i<rows.length;i++){
         const row=rows[i];
         if(row.every(c=>c===''||c==null))continue;
-        const nome=cm.nome!=null?String(row[cm.nome]||'').trim():'';
-        const cantina=cm.cantina!=null?String(row[cm.cantina]||'').trim():'';
+        const nome    = cm.nome    !=null ? String(row[cm.nome]   ||'').trim():'';
+        const cantina = cm.cantina !=null ? String(row[cm.cantina]||'').trim():'';
         if(!nome&&!cantina)continue;
         wines.push({
-          cantina, nome,
-          annata:         cm.annata        !=null?(parseInt(row[cm.annata])||null):null,
-          bevuto:         cm.bevuto        !=null?parseBool(row[cm.bevuto]):false,
-          qtTotale:       cm.qtTotale      !=null?parseNum(row[cm.qtTotale]):0,
-          qtRimasta:      cm.qtRimasta     !=null?parseNum(row[cm.qtRimasta]):0,
-          dataBevuta:     cm.dataBevuta    !=null?parseDate(row[cm.dataBevuta]):null,
-          prezzoAcquisto: cm.prezzoAcquisto!=null?(parseNum(row[cm.prezzoAcquisto])||null):null,
-          luogoAcquisto:  cm.luogoAcquisto !=null?String(row[cm.luogoAcquisto]||'').trim()||null:null,
-          dataAcquisto:   cm.dataAcquisto  !=null?parseDate(row[cm.dataAcquisto]):null,
-          note:           cm.note          !=null?String(row[cm.note]||'').trim()||null:null,
+          cantina,
+          nome,
+          annata:         cm.annata        !=null ? (parseInt(row[cm.annata])||null)               : null,
+          bevuto:         cm.bevuto         !=null ? parseBool(row[cm.bevuto])                     : false,
+          qtTotale:       cm.qtTotale       !=null ? parseNum(row[cm.qtTotale])                    : 0,
+          qtRimasta:      cm.qtRimasta      !=null ? parseNum(row[cm.qtRimasta])                   : 0,
+          dataBevuta:     cm.dataBevuta     !=null ? parseDate(row[cm.dataBevuta])                 : null,
+          prezzoAcquisto: cm.prezzoAcquisto !=null ? (parseNum(row[cm.prezzoAcquisto])||null)      : null,
+          luogoAcquisto:  cm.luogoAcquisto  !=null ? String(row[cm.luogoAcquisto]||'').trim()||null: null,
+          dataAcquisto:   cm.dataAcquisto   !=null ? parseDate(row[cm.dataAcquisto])               : null,
+          note:           cm.note           !=null ? String(row[cm.note]||'').trim()||null         : null,
         });
       }
       if(wines.length===0){showToast('Nessun vino riconosciuto nel file','error');return;}
@@ -1359,18 +1431,18 @@ async function exportExcel() {
   const wines=await dbLoad();
   if(wines.length===0){showToast('Nessun vino da esportare','info');return;}
   const rows=wines.map(w=>({
-    'Cantina':         w.cantina          ||'',
-    'Nome Vino':       w.nome             ||'',
-    'Annata':          w.annata           ||'',
-    'Bevuto':          w.bevuto?'Si':'No',
-    'Qtà Totale':      w.qtTotale         ??0,
-    'Qtà Rimasta':     w.qtRimasta        ??0,
-    'Data Bevuta':     w.dataBevuta       ||'',
-    'Prezzo Acquisto': w.prezzoAcquisto   ||'',
-    'Valore (€)':      computedVal(w),
-    'Luogo Acquisto':  w.luogoAcquisto    ||'',
-    'Data Acquisto':   w.dataAcquisto     ||'',
-    'Note':            w.note             ||'',
+    'Cantina':          w.cantina           ||'',
+    'Nome Vino':        w.nome              ||'',
+    'Annata':           w.annata            ||'',
+    'Bevuto':           w.bevuto?'Si':'No',
+    'Qtà Totale':       w.qtTotale          ??0,
+    'Qtà Rimasta':      w.qtRimasta         ??0,
+    'Data Bevuta':      w.dataBevuta        ||'',
+    'Prezzo Acquisto':  w.prezzoAcquisto    ||'',
+    'Valore (€)':       computedVal(w),
+    'Luogo Acquisto':   w.luogoAcquisto     ||'',
+    'Data Acquisto':    w.dataAcquisto      ||'',
+    'Note':             w.note              ||'',
   }));
   const ws=XLSX.utils.json_to_sheet(rows);
   ws['!cols']=[18,22,8,8,10,10,14,16,12,20,14,28].map(w=>({wch:w}));
@@ -1387,19 +1459,19 @@ function printList() { window.print(); }
    SETTINGS
 ══════════════════════════════════════════════════════ */
 function openSettings() {
-  document.getElementById('s-supabase-url').value  = localStorage.getItem(SB_URL_KEY) ||'';
+  document.getElementById('s-supabase-url').value  = localStorage.getItem(SB_URL_KEY)||'';
   document.getElementById('s-supabase-anon').value = localStorage.getItem(SB_ANON_KEY)||'';
-  document.getElementById('s-apikey').value         = localStorage.getItem('cantina_perplexity_apikey')||'';
+  document.getElementById('s-apikey').value = localStorage.getItem('cantina_perplexity_apikey')||'';
   openModal('settingsModal');
 }
 function saveSettings() {
   const url  = document.getElementById('s-supabase-url').value.trim();
   const anon = document.getElementById('s-supabase-anon').value.trim();
   const key  = document.getElementById('s-apikey').value.trim();
-  if (url)  localStorage.setItem(SB_URL_KEY,  url);  else localStorage.removeItem(SB_URL_KEY);
-  if (anon) localStorage.setItem(SB_ANON_KEY, anon); else localStorage.removeItem(SB_ANON_KEY);
-  if (key)  localStorage.setItem('cantina_perplexity_apikey', key); else localStorage.removeItem('cantina_perplexity_apikey');
-  _sbClient = null; // forza re-init
+  if(url)  localStorage.setItem(SB_URL_KEY, url);   else localStorage.removeItem(SB_URL_KEY);
+  if(anon) localStorage.setItem(SB_ANON_KEY, anon); else localStorage.removeItem(SB_ANON_KEY);
+  if(key)  localStorage.setItem('cantina_perplexity_apikey', key); else localStorage.removeItem('cantina_perplexity_apikey');
+  _sbClient = null;
   closeModal('settingsModal');
   showToast('Impostazioni salvate — connessione in corso…','info');
   initSupabase().then(()=>{ updateStats(); renderTable(); });
@@ -1409,7 +1481,7 @@ function saveSettings() {
 /* ══════════════════════════════════════════════════════
    PDF HANDLING
 ══════════════════════════════════════════════════════ */
-let _pdfText = '';
+let _pdfText = '';   // testo estratto dal PDF correntemente selezionato
 
 async function handlePdfSelect(input) {
   const file = input.files[0];
@@ -1431,10 +1503,11 @@ async function handlePdfSelect(input) {
 }
 
 async function extractPdfText(file) {
-  if (file.type==='text/plain'||file.name.endsWith('.txt')) {
+  if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
     return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsText(file,'UTF-8'); });
   }
   if (typeof pdfjsLib === 'undefined') {
+    // worker già caricato dallo script nell'head
     window.pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
   }
   if (window.pdfjsLib) {
@@ -1442,7 +1515,7 @@ async function extractPdfText(file) {
     const ab  = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({data: ab}).promise;
     const pages = [];
-    for (let i=1; i<=Math.min(pdf.numPages,15); i++) {
+    for (let i = 1; i <= Math.min(pdf.numPages, 15); i++) {
       const page = await pdf.getPage(i);
       const tc   = await page.getTextContent();
       pages.push(tc.items.map(t=>t.str).join(' '));
@@ -1452,6 +1525,7 @@ async function extractPdfText(file) {
   throw new Error('pdf.js non disponibile');
 }
 
+/* Resetta PDF quando si chiude/riapre il modal */
 function resetPdfField() {
   _pdfText = '';
   const inp = document.getElementById('f-pdf');
@@ -1464,9 +1538,8 @@ function resetPdfField() {
   if (info) info.style.display = 'none';
 }
 
-
 /* ══════════════════════════════════════════════════════
-   SCHEDA TECNICA — MOTORE PERPLEXITY
+   SCHEDA TECNICA — MOTORE VINAI
 ══════════════════════════════════════════════════════ */
 const SCORE_WEIGHTS=[
   {key:'equilibrio_score', label:'Equilibrio',  w:.22},
@@ -1489,13 +1562,14 @@ function fmtVitigni(arr){
     if(typeof v==='string')return v;
     if(typeof v==='object'&&v!==null){
       const nome=v.nome||v.name||v.vitigno||v.grape||'';
-      let pct=v.percentuale||v.perc||v.percentage||v.pct||'';
+      let pct =v.percentuale||v.perc||v.percentage||v.pct||'';
       if(pct&&String(pct).trim()!==''&&!/\%/.test(String(pct)))pct=pct+'%';
-      return[nome,pct].filter(Boolean).join(' ');
+      return [nome,pct].filter(Boolean).join(' ');
     }
     return String(v);
   }).filter(Boolean).join(', ')||'—';
 }
+
 function calcScore(g){
   let w=0;
   const rows=SCORE_WEIGHTS.map(({key,label,w:wt})=>{const v=g[key]||75;w+=v*wt;return{label,v,w:wt,contrib:+(v*wt*.5).toFixed(1)}});
@@ -1535,10 +1609,14 @@ function setSchedaLoading(on){
   loader.classList.toggle('show',on);
   card.style.display=on?'none':'block';
   if(on){
-    setSchedaPhase(1);let i=0;
+    setSchedaPhase(1);
+    let i=0;
     document.getElementById('schedaLoaderMsg').textContent=LOADER_MSGS[0];
     loaderTimer=setInterval(()=>{i=(i+1)%LOADER_MSGS.length;document.getElementById('schedaLoaderMsg').textContent=LOADER_MSGS[i];},1800);
-  }else{clearInterval(loaderTimer);setSchedaPhase(0);}
+  } else {
+    clearInterval(loaderTimer);
+    setSchedaPhase(0);
+  }
 }
 
 /* ── open / close ── */
@@ -1555,7 +1633,7 @@ async function openScheda(id){
   document.body.classList.add('scheda-open');
   setSchedaLoading(true);
   try{
-    const{data,usedWebSearch}=await callPerplexity(key,wine.nome||'',String(wine.annata||''),wine.cantina||'',wine.urlRiferimento||'',_pdfText||'');
+    const{data,usedWebSearch}=await callPerplexity(key,wine.nome||'',String(wine.annata||''),wine.cantina||'',wine.urlRiferimento||'',wine._pdfText||_pdfText||'');
     renderSheet(data,wine.nome||'',String(wine.annata||''),wine.cantina||'',usedWebSearch);
   }catch(e){
     setSchedaLoading(false);
@@ -1572,12 +1650,16 @@ function closeScheda(){
 }
 function printScheda(){window.print();}
 
-/* ── Perplexity API ── */
+/* ── Perplexity calls — sonar-pro ha web search nativo su ogni chiamata ── */
 async function webSearch(key,query){
   try{
     const r=await fetch('https://api.perplexity.ai/chat/completions',{
       method:'POST',headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
-      body:JSON.stringify({model:'sonar-pro',messages:[{role:'user',content:query}],temperature:0.1,max_tokens:2000})
+      body:JSON.stringify({
+        model:'sonar-pro',
+        messages:[{role:'user',content:query}],
+        temperature:0.1,max_tokens:2000
+      })
     });
     if(!r.ok)return'';
     return(await r.json()).choices?.[0]?.message?.content||'';
@@ -1585,18 +1667,46 @@ async function webSearch(key,query){
 }
 
 async function callPerplexity(key,wineName,vintage,producer,producerUrl='',techSheetText=''){
-  const exactName=producer?`"${wineName}" prodotto da "${producer}"`:`"${wineName}"`;
-  const vintageStr=vintage?`annata ${vintage}`:'annata non specificata';
-  const antiVariant=`IMPORTANTE: cerca ESATTAMENTE il vino "${wineName}"${producer?` di "${producer}"`:''}. NON cercare varianti (Riserva, Classico, Superiore, ecc.) a meno che non facciano parte del nome esatto sopra indicato.`;
-  const urlHint=producerUrl?`\nURL PRIORITARIO — leggi questa pagina prima di tutto: ${producerUrl}`:'';
+  /* Identificatore preciso: evita confusione con varianti (Riserva, Classico, ecc.) */
+  const exactName = producer ? `"${wineName}" prodotto da "${producer}"` : `"${wineName}"`;
+  const vintageStr = vintage ? `annata ${vintage}` : 'annata non specificata';
+  /* Istruzione anti-variante: enfatizza il nome esatto */
+  const antiVariant = `IMPORTANTE: cerca ESATTAMENTE il vino "${wineName}"${producer?` di "${producer}"`:''}. NON cercare varianti (Riserva, Classico, Superiore, ecc.) a meno che non facciano parte del nome esatto sopra indicato.`;
+  const urlHint = producerUrl ? `\nURL PRIORITARIO — leggi questa pagina prima di tutto: ${producerUrl}` : '';
+
   setSchedaPhase(1);
   document.getElementById('schedaLoaderMsg').textContent='Ricerca dati tecnici verificati…';
-  const q1=`${antiVariant}${urlHint}\nCerca informazioni tecniche VERIFICATE sul vino ${exactName}, ${vintageStr}.\nPRIORITÀ FONTI: 1) ${producerUrl||'Sito ufficiale del produttore'} 2) gamberorosso.it, slowine.it, vitae.ais.it 3) wine-searcher.com, vinous.com, decanter.com.\nRICHIESTO — per ogni dato cita la fonte:\n- Vitigni con percentuali esatte\n- Denominazione DOC/DOCG ufficiale\n- Metodo di vinificazione: fermentatori, macerazione, lieviti\n- Affinamento: contenitore ESATTO, durata in mesi, poi bottiglia\n- Gradazione alcolica esatta\n- Resa per ettaro e numero bottiglie prodotte\nSe un dato non è trovato scrivi "NON TROVATO", non inventare.`;
-  const q2=`${antiVariant}\nCerca punteggi critici e note di degustazione SPECIFICI per ${exactName}, ${vintageStr}.\nFonti: wine-spectator.com, robertparker.com, jancisrobinson.com, jamessuckling.com, decanter.com, vinous.com, luca-maroni.com.\nRiporta per ogni valutazione: nome critico, punteggio numerico, annata valutata, breve nota di degustazione.`;
+  const q1=`${antiVariant}${urlHint}
+Cerca informazioni tecniche VERIFICATE sul vino ${exactName}, ${vintageStr}.
+PRIORITÀ FONTI: 1) ${producerUrl||'Sito ufficiale del produttore (scheda tecnica PDF/HTML)'} 2) gamberorosso.it, slowine.it, vitae.ais.it 3) wine-searcher.com, vinous.com, decanter.com.
+RICHIESTO — per ogni dato cita la fonte:
+- Vitigni: TUTTE le uve con percentuali esatte (es. Sangiovese 80%, Cabernet Sauvignon 20%)
+- Denominazione DOC/DOCG ufficiale
+- Metodo di vinificazione: tipo di fermentatori (vasche acciaio / cemento / legno), durata e tipo di macerazione, lieviti selezionati o indigeni, follatura/délestage
+- Affinamento: contenitore ESATTO (barrique / tonneaux / botti grandi da X hl / anfora / acciaio), durata in mesi, poi affinamento in bottiglia (mesi)
+- Gradazione alcolica esatta
+- Resa per ettaro (q/ha o hl/ha)
+- Numero bottiglie prodotte (tiratura)
+Se un dato non è trovato scrivi "NON TROVATO" per quel campo, non inventare.`;
+
+  const q2=`${antiVariant}
+Cerca punteggi critici e note di degustazione SPECIFICI per ${exactName}, ${vintageStr}.
+Fonti: wine-spectator.com, robertparker.com, jancisrobinson.com, jamessuckling.com, decanter.com, vinous.com, luca-maroni.com.
+Riporta per ogni valutazione: nome critico, punteggio numerico, annata valutata, breve nota di degustazione.`;
+
   setSchedaPhase(2);
   document.getElementById('schedaLoaderMsg').textContent='Ricerca premi, storia e curiosità…';
-  const q3=`Cerca TUTTI i premi, riconoscimenti e punteggi assegnati al vino "${wineName}"${producer?' prodotto da "'+producer+'"':''} nel corso degli anni — NON limitarti all'annata ${vintage||'specifica'}, cerca l'INTERA storia dei riconoscimenti su tutte le annate disponibili.\nFonti: gamberorosso.it (Tre Bicchieri), slowine.it, vitae.ais.it, bibenda.it, luca-maroni.com, decanter.com, jamessuckling.com, robertparker.com, wine-spectator.com, iwsc.net, mundus-vini.com, vinous.com, wineenthusiast.com.\nPer ogni premio/punteggio: nome esatto, organizzazione, anno assegnazione, annata vino, punteggio numerico.`;
-  const q4=`${antiVariant}${urlHint}\nCerca la storia e le curiosità di ${exactName}${producer?' e della cantina "'+producer+'"':''}.\nDesidero sapere: origine del nome del vino, storia del vigneto, aneddoti sulla creazione, filosofia della cantina, elementi di unicità, citazioni del produttore/enologo, legame col territorio.\nFonti: sito ufficiale produttore, gamberorosso.it, decanter.com, vinous.com, wineenthusiast.com.`;
+  const q3=`Cerca TUTTI i premi, riconoscimenti e punteggi assegnati al vino "${wineName}"${producer?' prodotto da "'+producer+'"':''} nel corso degli anni — NON limitarti all'annata ${vintage||'specifica'}, cerca l'INTERA storia dei riconoscimenti di questo vino su tutte le annate disponibili.
+Fonti da cercare obbligatoriamente: gamberorosso.it (Tre Bicchieri, Due Bicchieri Rossi), slowine.it (Chiocciola, Vite), vitae.ais.it (Quattro Viti, Tre Viti), bibenda.it (Cinque Grappoli), luca-maroni.com, decanter.com/wine-awards (Decanter World Wine Awards), jamessuckling.com, robertparker.com (Wine Advocate), wine-spectator.com, iwsc.net, mundus-vini.com, vinous.com, wineenthusiast.com.
+Per ogni premio/punteggio trovato riporta: nome esatto del premio, organizzazione assegnatrice, anno di assegnazione, annata del vino premiato, eventuale punteggio numerico.
+Cerca anche menzioni speciali, "vino dell'anno", inserimenti in classifiche top 100, ecc.
+Se proprio nessun riconoscimento è reperibile online scrivi "NESSUN PREMIO DOCUMENTATO".`;
+
+  const q4=`${antiVariant}${urlHint}
+Cerca la storia e le curiosità di ${exactName}${producer?' e della cantina "'+producer+'"':''}.
+Desidero sapere: origine del nome del vino, storia del vigneto o della parcella specifica, aneddoti sulla sua creazione o sul produttore, filosofia e valori della cantina, elementi di unicità rispetto agli altri vini della stessa denominazione, citazioni del produttore o enologo, legame col territorio e tradizione familiare.
+Fonti: sito ufficiale produttore, gamberorosso.it, decanter.com, vinous.com, interviste giornalistiche, wineenthusiast.com.`;
+
   const [r1,r2,r3,r4]=await Promise.allSettled([webSearch(key,q1),webSearch(key,q2),webSearch(key,q3),webSearch(key,q4)]);
   const trim=(s,max)=>s&&s.length>max?s.slice(0,max)+'…':s||'';
   const ctx=[
@@ -1605,31 +1715,37 @@ async function callPerplexity(key,wineName,vintage,producer,producerUrl='',techS
     r3.status==='fulfilled'&&r3.value?`=== PREMI ===\n${trim(r3.value,1600)}`:'',
     r4.status==='fulfilled'&&r4.value?`=== STORIA & CURIOSITÀ ===\n${trim(r4.value,1600)}`:''
   ].filter(Boolean).join('\n\n');
+  const usedWebSearch=ctx.length>200;
   setSchedaPhase(3);
   document.getElementById('schedaLoaderMsg').textContent='Strutturazione scheda tecnica…';
   const cy=new Date().getFullYear();
-  const pdfSection=techSheetText?`\n=== SCHEDA TECNICA UFFICIALE DEL PRODUTTORE (PRIORITÀ ASSOLUTA) ===\nUsa questi dati con precedenza su tutto il resto per: affinamento, vinificazione, gradazione alcolica, vitigni.\n${techSheetText.slice(0,4000)}\n=== FINE SCHEDA TECNICA ===\n`:'';
+  const pdfSection = techSheetText
+    ? `\n=== SCHEDA TECNICA UFFICIALE DEL PRODUTTORE (PRIORITÀ ASSOLUTA) ===\nUsa questi dati con precedenza su tutto il resto per: affinamento, vinificazione, gradazione alcolica, vitigni.\n${techSheetText.slice(0,4000)}\n=== FINE SCHEDA TECNICA ===\n`
+    : '';
   const prompt=`Scheda tecnica professionale per il vino ESATTO: "${wineName}"${producer?' del produttore "'+producer+'"':''}. Annata: ${vintage||'non specificata'}. Anno corrente: ${cy}.
-ATTENZIONE: genera la scheda SOLO per questo vino specifico, NON per varianti.
+ATTENZIONE: genera la scheda SOLO per questo vino specifico, NON per varianti (Riserva, Classico, Superiore, Gran Selezione ecc.) a meno che non facciano parte del nome esatto indicato sopra.
 ${producerUrl?`Pagina ufficiale di riferimento: ${producerUrl}\n`:''}${pdfSection}${ctx?`=== DATI VERIFICATI DA RICERCA WEB ===\n${ctx}\n=== FINE ===`:'NESSUN DATO VERIFICATO: per vinificazione/affinamento/gradazione scrivi "Da verificare con il produttore".'}
 Restituisci SOLO questo JSON:
 {"denominazione":"","regione":"","produttore":"","vitigni":[{"nome":"","percentuale":""}],"tipologia":"","colore_hex":"#6B2737","regione_geo":{"lat":44.7,"lon":10.9,"zoom":9,"nome":""},"premi":[],"colore":{"tonalita":"","intensita":"","trasparenza":"","viscosita":""},"olfattivo":{"intensita":"","qualita":"","note_primarie":[],"note_secondarie":[],"note_terziarie":[],"descrizione":""},"gustativo":{"dolcezza":"secco","acidita_livello":"","acidita_score":65,"tannini_livello":"","tannini_qualita":"","tannini_score":78,"corpo_livello":"","corpo_score":82,"complessita_score":88,"alcol_perc":"","alcol_fonte":"","alcol_score":70,"persistenza_livello":"","persistenza_sec":"","persistenza_score":88,"equilibrio_livello":"","equilibrio_score":90,"descrizione":""},"abbinamenti":[{"cibo":"","descrizione":"","affinita":95},{"cibo":"","descrizione":"","affinita":90},{"cibo":"","descrizione":"","affinita":85},{"cibo":"","descrizione":"","affinita":80},{"cibo":"","descrizione":"","affinita":75},{"cibo":"","descrizione":"","affinita":70}],"abbinamenti_negativi":[{"cibo":"","motivo":""},{"cibo":"","motivo":""},{"cibo":"","motivo":""}],"longevita":{"stato_attuale":"In evoluzione","anno_inizio_picco":${parseInt(vintage||cy-3)+5},"anno_fine_picco":${parseInt(vintage||cy-3)+12},"anno_fine_declino":${parseInt(vintage||cy-3)+22},"descrizione":""},"conservazione":{"temperatura":"","umidita":"","posizione":"","luce":"","vibrazioni":"","anni_ancora":"","consiglio":""},"annate_comparabili":[{"anno":0,"note":""}],"difetti_potenziali":[{"difetto":"","rischio":"basso","descrizione":""}],"vinificazione":"","vinificazione_fonte":"","affinamento":"","affinamento_fonte":"","temperatura_servizio":"","decantazione":"","bicchiere":"","note_cantina":null,"note_vino":null,"contatti":{"indirizzo":null,"comune":null,"provincia":null,"sito_web":null,"telefono":null,"email":null},"immagine_bottiglia":null,"immagine_fonte":null,"nota_sommelier":""}
 Tutti gli _score: scala 0-100.
-longevita: sii REALISTICO — la stragrande maggioranza dei vini di qualità raggiunge il picco tra 5-12 anni dalla vendemmia e il declino qualitativo inizia entro 18-28 anni. Assegna longevità superiore SOLO a vini eccezionali e strutturati: grandi Barolo/Barbaresco Riserva, Brunello di Montalcino Riserva, Grands Crus di Bordeaux e Borgogna, Vintage Port, Amarone di annate eccezionali (max 40-55 anni). Per tutti gli altri vini mantieniti entro 20-30 anni totali.
-vitigni: array di oggetti {nome, percentuale} con TUTTE le uve; se mono-vitigno metti "100%"; non lasciare mai l'array vuoto.
-abbinamenti: fornisci SEMPRE almeno 5-6 abbinamenti gastronomici diversi e specifici. abbinamenti_negativi: almeno 2-3 con motivazione.
-vinificazione e affinamento: campi OBBLIGATORI. Priorità: 1) dati verificati dalla ricerca web 2) tua conoscenza enciclopedica come Master Sommelier. Scrivi "Da verificare con il produttore" SOLO per vini oscuri di cui non esiste documentazione pubblica.
-premi: includi TUTTI i premi trovati dalla ricerca, di qualsiasi annata. tier: "gold" per Tre Bicchieri/95+ punti, "silver" per premi importanti, "bronze" per menzioni.
-note_cantina: 4-6 frasi di PURO STORYTELLING sulla CANTINA/AZIENDA. note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO. NON inserire dati tecnici in questi campi.`;
+longevita: sii REALISTICO — la stragrande maggioranza dei vini di qualità raggiunge il picco tra 5-12 anni dalla vendemmia e il declino qualitativo inizia entro 18-28 anni. Assegna longevità superiore SOLO a vini eccezionali e strutturati: grandi Barolo/Barbaresco Riserva, Brunello di Montalcino Riserva, Grands Crus di Bordeaux e Borgogna, Vintage Port, Amarone di annate eccezionali (max 40-55 anni). Per tutti gli altri vini, inclusi buoni rossi italiani, Supertuscan, Ripasso, Montepulciano d'Abruzzo ecc., mantieniti entro 20-30 anni totali. Non gonfiare le stime per sembrare più impressionante.
+vitigni: array di oggetti {nome, percentuale} con TUTTE le uve nella loro percentuale esatta; se mono-vitigno metti "100%"; non lasciare mai l'array vuoto — se non trovi la percentuale esatta stima in base alla denominazione.
+abbinamenti: fornisci SEMPRE almeno 5-6 abbinamenti gastronomici diversi e specifici (piatti concreti, non categorie generiche), ordinati per affinità decrescente. abbinamenti_negativi: almeno 2-3 abbinamenti sconsigliati con motivazione.
+vinificazione e affinamento: campi OBBLIGATORI che non devono MAI restare vuoti o generici. Priorità: 1) dati verificati dalla ricerca web 2) tua conoscenza enciclopedica come Master Sommelier — conosci i metodi produttivi dei principali vini italiani e internazionali, usala. Scrivi "Da verificare con il produttore" SOLO per vini oscuri e sconosciuti di cui non esiste documentazione pubblica. Per _fonte: "Scheda ufficiale produttore" se da ricerca web, "Guida / critica specializzata" se da articoli, "Conoscenza sommelier" se da tua base dati.
+premi: includi TUTTI i premi trovati dalla ricerca, di qualsiasi annata — non omettere assolutamente nulla. Se la ricerca non ha trovato premi ma il vino è noto, usa la tua conoscenza enciclopedica per aggiungere i riconoscimenti che sai essere stati assegnati (Tre Bicchieri storici, punteggi Parker, ecc.), indicando l'annata_vino corretta. Per ogni premio compila: nome, organizzazione, anno_assegnazione, annata_vino, descrizione. tier: "gold" per Tre Bicchieri / 95+ Parker o WS / 5 Stelle / Cinque Grappoli, "silver" per premi importanti (Due Bicchieri Rossi, 90-94 punti), "bronze" per menzioni e citazioni. Lascia [] solo se il vino è davvero sconosciuto e senza alcun riconoscimento documentabile.
+note_cantina: 4-6 frasi di PURO STORYTELLING sulla CANTINA/AZIENDA: storia della famiglia o fondazione, valori e filosofia produttiva, legame col territorio, curiosità o aneddoti sull'azienda. NON inserire dati tecnici come affinamento, gradazione alcolica o descrizioni organolettiche.
+note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del nome, storia della vigna o parcella, aneddoti sulla sua creazione, elementi di unicità, citazioni del produttore. NON ripetere dati tecnici già presenti nelle altre sezioni.
+Se le informazioni di storytelling non sono disponibili lascia null.`;
   const res=await fetch('https://api.perplexity.ai/chat/completions',{
     method:'POST',headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
-    body:JSON.stringify({model:'sonar-pro',messages:[{role:'system',content:'Sei un Master Sommelier con enciclopedica conoscenza di tutti i principali vini italiani e internazionali. Rispondi SOLO con JSON valido e completo, senza markdown, senza backtick, senza testo prima o dopo il JSON.'},{role:'user',content:prompt}],temperature:.2,max_tokens:8000})
+    body:JSON.stringify({model:'sonar-pro',messages:[{role:'system',content:'Sei un Master Sommelier con enciclopedica conoscenza di tutti i principali vini italiani e internazionali, inclusi metodi di vinificazione, affinamento, vitigni e stili produttivi. Rispondi SOLO con JSON valido e completo, senza markdown, senza backtick, senza testo prima o dopo il JSON. Non lasciare mai campi obbligatori come vinificazione e affinamento vuoti o con "Da verificare" se il vino è documentato — usa la tua conoscenza e i dati dalla ricerca web.'},{role:'user',content:prompt}],temperature:.2,max_tokens:8000})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`Errore API Perplexity (${res.status})`);}
   const j=await res.json();
+  /* Perplexity può restituire il JSON dentro backtick markdown — lo puliamo */
   let txt=j.choices?.[0]?.message?.content||'{}';
   txt=txt.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
-  return{data:JSON.parse(txt),usedWebSearch:true};
+  return{data:JSON.parse(txt),usedWebSearch:true}; /* sonar-pro cerca sempre sul web */
 }
 
 /* ── renderSheet ── */
@@ -1668,13 +1784,21 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   const origVin=parseInt(rawVintage)||new Date().getFullYear()-6;
   const lp=calcLongevityParams(origVin,l.anno_inizio_picco,l.anno_fine_picco,l.anno_fine_declino,g);
   buildLongevityChart(origVin,lp.peakStart,lp.peakEnd,lp.declineEnd,lp.peakScore,lp.startScore);
+  /* Stato e descrizione ENTRAMBI calcolati dagli anni reali del grafico — zero dipendenza dall'AI */
   {const cy2=new Date().getFullYear();let statoLabel,sc2,ld;
-   if(lp.peakStart>cy2+1){statoLabel='In evoluzione';sc2='ls-evolving';ld=`Ancora in evoluzione: raggiungerà il suo picco espressivo tra il ${lp.peakStart} e il ${lp.peakEnd}. Potenziale di conservazione consigliato fino al ${lp.declineEnd}.`;}
-   else if(lp.peakEnd>=cy2){statoLabel='Al picco espressivo';sc2='ls-peak';ld=`Attualmente nella sua finestra di picco ottimale (${lp.peakStart}–${lp.peakEnd}). Consumare preferibilmente entro il ${lp.declineEnd} per apprezzarne la piena espressione.`;}
-   else{statoLabel='In declino qualitativo';sc2='ls-decline';ld=`Ha superato il suo picco espressivo (${lp.peakStart}–${lp.peakEnd}). La curva di declino qualitativo è iniziata attorno al ${lp.declineEnd}. Se conservato in condizioni ottimali, può ancora offrire interessanti note evolutive.`;}
+   if(lp.peakStart>cy2+1){
+     statoLabel='In evoluzione';sc2='ls-evolving';
+     ld=`Ancora in evoluzione: raggiungerà il suo picco espressivo tra il ${lp.peakStart} e il ${lp.peakEnd}. Potenziale di conservazione consigliato fino al ${lp.declineEnd}.`;
+   }else if(lp.peakEnd>=cy2){
+     statoLabel='Al picco espressivo';sc2='ls-peak';
+     ld=`Attualmente nella sua finestra di picco ottimale (${lp.peakStart}–${lp.peakEnd}). Consumare preferibilmente entro il ${lp.declineEnd} per apprezzarne la piena espressione.`;
+   }else{
+     statoLabel='In declino qualitativo';sc2='ls-decline';
+     ld=`Ha superato il suo picco espressivo (${lp.peakStart}–${lp.peakEnd}). La curva di declino qualitativo è iniziata attorno al ${lp.declineEnd}. Se conservato in condizioni ottimali, può ancora offrire interessanti note evolutive.`;
+   }
    document.getElementById('sLongState').innerHTML=`<div class="long-state ${sc2}">${statoLabel}</div>`;
    document.getElementById('sLongDesc').textContent=ld;}
-  longOffsets={rawOffsetPeak:(l.anno_inizio_picco||origVin+5)-origVin,rawOffsetEnd:(l.anno_fine_picco||origVin+12)-origVin,rawOffsetDecline:(l.anno_fine_declino||origVin+22)-origVin,originalVintage:origVin,g};
+  longOffsets={rawOffsetPeak:(l.anno_inizio_picco||origVin+6)-origVin,rawOffsetEnd:(l.anno_fine_picco||origVin+16)-origVin,rawOffsetDecline:(l.anno_fine_declino||origVin+26)-origVin,originalVintage:origVin,g};
   const simInp=document.getElementById('longSimVintage');if(simInp)simInp.value=origVin;
   document.getElementById('longSimNote').textContent=`Annata analizzata: ${origVin} · SLI: ${lp.sli}/100`;
   document.getElementById('longSimBar').style.display=isNaN(origVin)?'none':'flex';
@@ -1687,7 +1811,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   /* 09 premi */
   const awards=d.premi||[];
   const tierMedal={gold:'🏆',silver:'🥈',bronze:'🥉'};
-  document.getElementById('sAwards').innerHTML=awards.length?awards.map(a=>{const tier=(a.tier||'silver').toLowerCase();const aVin=a.annata_vino?String(a.annata_vino):'';const isOther=aVin&&rawVintage&&aVin!==String(rawVintage);return`<div class="award-card tier-${tier}"><div class="award-medal">${tierMedal[tier]||'🎖️'}</div><div class="award-body"><div class="award-name">${a.nome||'—'}${isOther?`<span class="award-other-chip">⚠ annata ${aVin}</span>`:''}</div><div class="award-meta">${a.organizzazione||''}${a.anno_assegnazione?' · '+a.anno_assegnazione:''}</div><div class="award-desc">${a.descrizione||''}</div></div></div>`;}).join(''):'<div class="no-awards">Nessun premio trovato online per questo vino.</div>';
+  document.getElementById('sAwards').innerHTML=awards.length?awards.map(a=>{const tier=(a.tier||'silver').toLowerCase();const aVin=a.annata_vino?String(a.annata_vino):'';const isOther=aVin&&rawVintage&&aVin!==String(rawVintage);return`<div class="award-card tier-${tier}"><div class="award-medal">${tierMedal[tier]||'🎖️'}</div><div class="award-body"><div class="award-name">${a.nome||'—'}${isOther?`<span class="award-other-chip">⚠ annata ${aVin}</span>`:''}</div><div class="award-meta">${a.organizzazione||''}${a.anno_assegnazione?' · '+a.anno_assegnazione:''}</div><div class="award-desc">${a.descrizione||''}</div></div></div>`;}).join(''):'<div class="no-awards">Nessun premio trovato online per questo vino. Potrebbero esistere riconoscimenti non indicizzati — verifica direttamente sul sito del produttore o sulle guide specializzate.</div>';
   /* 10 produzione */
   document.getElementById('sProd').innerHTML=[{label:'Metodo di Vinificazione',value:d.vinificazione,fonte:d.vinificazione_fonte},{label:'Affinamento',value:d.affinamento,fonte:d.affinamento_fonte}].map(p=>`<div class="prod-tile"><div class="st-label">${p.label}</div><div class="st-val">${prodVal(p.value)}</div>${prodSourceChip(p.fonte)}</div>`).join('');
   /* 11 servizio */
@@ -1706,6 +1830,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
     document.getElementById('sStoriaContent').innerHTML=sg+(hasContatti?`<div class="contatti-block"><div class="contatti-block-label">Contatti &amp; Indirizzo</div><div class="contatti-grid">${ci}</div></div>`:'');
   }else{ss.style.display='none';}
   document.getElementById('sSommNote').textContent=d.nota_sommelier||'';
+  /* mostra card */
   setSchedaLoading(false);
   document.getElementById('schedaCardArea').style.display='block';
   document.getElementById('schedaOverlay').scrollTo(0,0);
@@ -1738,7 +1863,13 @@ function calcLongevityParams(vintage,rawPs,rawPe,rawDd,g){
   const g2=g||{};const tannini=g2.tannini_score||68,acidita=g2.acidita_score||65,corpo=g2.corpo_score||68,compl=g2.complessita_score||70;
   const sli=tannini*.38+acidita*.30+corpo*.18+compl*.14;
   const structMult=Math.min(1.22,Math.max(0.68,sli/70));
-  const maxYears=sli>=90?55:sli>=82?42:sli>=73?32:sli>=65?25:18;
+  /* Cap realistico in anni dalla vendemmia, calibrato sull'SLI strutturale:
+     < 65 → vini leggeri/medi     max 18 anni
+     65-73 → buona struttura      max 25 anni
+     73-82 → ottima struttura     max 32 anni
+     82-90 → eccellente           max 42 anni
+     > 90  → vini eterni (Barolo Riserva, Brunello, Grand Cru Bdx) max 55 anni */
+  const maxYears = sli>=90?55 : sli>=82?42 : sli>=73?32 : sli>=65?25 : 18;
   const dPs=(rawPs||vintage+5)-vintage,dPe=(rawPe||vintage+12)-vintage,dDd=(rawDd||vintage+22)-vintage;
   const adjDPs=Math.max(2,Math.round(dPs*structMult));
   const adjDPe=Math.max(adjDPs+2,Math.round(dPe*structMult*.87));
@@ -1784,9 +1915,9 @@ function shiftLongVintage(delta){const inp=document.getElementById('longSimVinta
 /* ══════════════════════════════════════════════════════
    UTILS
 ══════════════════════════════════════════════════════ */
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-function showToast(msg,type='info'){
+function showToast(msg,type='info') {
   const ct=document.getElementById('toastContainer');
   const t=document.createElement('div');
   t.className=`toast ${type}`;
