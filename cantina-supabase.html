@@ -1102,7 +1102,10 @@ async function renderTable() {
     const valoreStr     = valore>0 ? '€ '+valore.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
     const noteCell      = w.note ? `<span title="${esc(w.note)}">${esc(w.note)}</span>` : '<span style="opacity:.28">—</span>';
     const drinkBtn      = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">🍷</button>` : '';
-    const schedaTitle   = 'Genera Scheda Tecnica (Perplexity)';
+    const hasScheda     = !!w._scheda;
+    const schedaTitle   = hasScheda ? 'Visualizza scheda (dalla cache — gratis)' : 'Genera Scheda Tecnica con Perplexity';
+    const schedaIcon    = hasScheda ? '📋' : '📄';
+    const schedaStyle   = hasScheda ? 'color:#4ADE80' : '';
     return `<tr>
       <td class="td-cantina">${esc(w.cantina||'—')}</td>
       <td class="td-nome">${esc(w.nome||'—')}</td>
@@ -1116,7 +1119,7 @@ async function renderTable() {
       <td class="td-note">${noteCell}</td>
       <td>
         <div class="td-actions">
-          <button class="icon-btn ib-scheda" title="${schedaTitle}" onclick="openScheda('${id}')">📄</button>
+          <button class="icon-btn ib-scheda" title="${schedaTitle}" onclick="openScheda('${id}')" style="${schedaStyle}">${schedaIcon}</button>
           <button class="icon-btn ib-edit"   title="Modifica"       onclick="openEditModal('${id}')">✏️</button>
           ${drinkBtn}
           <button class="icon-btn ib-del"    title="Elimina"        onclick="openDeleteConfirm('${id}')">🗑️</button>
