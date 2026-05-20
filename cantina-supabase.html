@@ -1644,64 +1644,26 @@ async function webSearch(query){
 }
 
 async function callPerplexity(wineName,vintage,producer,producerUrl='',techSheetText=''){
-  /* Identificatore preciso: evita confusione con varianti (Riserva, Classico, ecc.) */
   const exactName = producer ? `"${wineName}" prodotto da "${producer}"` : `"${wineName}"`;
-  const vintageStr = vintage ? `annata ${vintage}` : 'annata non specificata';
-  /* Istruzione anti-variante: enfatizza il nome esatto */
-  const antiVariant = `IMPORTANTE: cerca ESATTAMENTE il vino "${wineName}"${producer?` di "${producer}"`:''}. NON cercare varianti (Riserva, Classico, Superiore, ecc.) a meno che non facciano parte del nome esatto sopra indicato.`;
   const urlHint = producerUrl ? `\nURL PRIORITARIO — leggi questa pagina prima di tutto: ${producerUrl}` : '';
 
   setSchedaPhase(1);
-  document.getElementById('schedaLoaderMsg').textContent='Ricerca dati tecnici verificati…';
-  const q1=`${antiVariant}${urlHint}
-Cerca informazioni tecniche VERIFICATE sul vino ${exactName}, ${vintageStr}.
-PRIORITÀ FONTI: 1) ${producerUrl||'Sito ufficiale del produttore (scheda tecnica PDF/HTML)'} 2) gamberorosso.it, slowine.it, vitae.ais.it 3) wine-searcher.com, vinous.com, decanter.com.
-RICHIESTO — per ogni dato cita la fonte:
-- Vitigni: TUTTE le uve con percentuali esatte (es. Sangiovese 80%, Cabernet Sauvignon 20%)
-- Denominazione DOC/DOCG ufficiale
-- Metodo di vinificazione: tipo di fermentatori (vasche acciaio / cemento / legno), durata e tipo di macerazione, lieviti selezionati o indigeni, follatura/délestage
-- Affinamento: contenitore ESATTO (barrique / tonneaux / botti grandi da X hl / anfora / acciaio), durata in mesi, poi affinamento in bottiglia (mesi)
-- Gradazione alcolica esatta
-- Resa per ettaro (q/ha o hl/ha)
-- Numero bottiglie prodotte (tiratura)
-Se un dato non è trovato scrivi "NON TROVATO" per quel campo, non inventare.`;
-
-  const q2=`${antiVariant}
-Cerca punteggi critici e note di degustazione SPECIFICI per ${exactName}, ${vintageStr}.
-Fonti: wine-spectator.com, robertparker.com, jancisrobinson.com, jamessuckling.com, decanter.com, vinous.com, luca-maroni.com.
-Riporta per ogni valutazione: nome critico, punteggio numerico, annata valutata, breve nota di degustazione.`;
-
+  document.getElementById('schedaLoaderMsg').textContent='Ricerca web in corso con Perplexity Sonar Pro…';
   setSchedaPhase(2);
-  document.getElementById('schedaLoaderMsg').textContent='Ricerca premi, storia e curiosità…';
-  const q3=`Cerca TUTTI i premi, riconoscimenti e punteggi assegnati al vino "${wineName}"${producer?' prodotto da "'+producer+'"':''} nel corso degli anni — NON limitarti all'annata ${vintage||'specifica'}, cerca l'INTERA storia dei riconoscimenti di questo vino su tutte le annate disponibili.
-Fonti da cercare obbligatoriamente: gamberorosso.it (Tre Bicchieri, Due Bicchieri Rossi), slowine.it (Chiocciola, Vite), vitae.ais.it (Quattro Viti, Tre Viti), bibenda.it (Cinque Grappoli), luca-maroni.com, decanter.com/wine-awards (Decanter World Wine Awards), jamessuckling.com, robertparker.com (Wine Advocate), wine-spectator.com, iwsc.net, mundus-vini.com, vinous.com, wineenthusiast.com.
-Per ogni premio/punteggio trovato riporta: nome esatto del premio, organizzazione assegnatrice, anno di assegnazione, annata del vino premiato, eventuale punteggio numerico.
-Cerca anche menzioni speciali, "vino dell'anno", inserimenti in classifiche top 100, ecc.
-Se proprio nessun riconoscimento è reperibile online scrivi "NESSUN PREMIO DOCUMENTATO".`;
-
-  const q4=`${antiVariant}${urlHint}
-Cerca la storia e le curiosità di ${exactName}${producer?' e della cantina "'+producer+'"':''}.
-Desidero sapere: origine del nome del vino, storia del vigneto o della parcella specifica, aneddoti sulla sua creazione o sul produttore, filosofia e valori della cantina, elementi di unicità rispetto agli altri vini della stessa denominazione, citazioni del produttore o enologo, legame col territorio e tradizione familiare.
-Fonti: sito ufficiale produttore, gamberorosso.it, decanter.com, vinous.com, interviste giornalistiche, wineenthusiast.com.`;
-
-  const [r1,r2,r3,r4]=await Promise.allSettled([webSearch(q1),webSearch(q2),webSearch(q3),webSearch(q4)]);
-  const trim=(s,max)=>s&&s.length>max?s.slice(0,max)+'…':s||'';
-  const ctx=[
-    r1.status==='fulfilled'&&r1.value?`=== DATI TECNICI ===\n${trim(r1.value,2000)}`:'',
-    r2.status==='fulfilled'&&r2.value?`=== PUNTEGGI CRITICI ===\n${trim(r2.value,1400)}`:'',
-    r3.status==='fulfilled'&&r3.value?`=== PREMI ===\n${trim(r3.value,1600)}`:'',
-    r4.status==='fulfilled'&&r4.value?`=== STORIA & CURIOSITÀ ===\n${trim(r4.value,1600)}`:''
-  ].filter(Boolean).join('\n\n');
-  const usedWebSearch=ctx.length>200;
+  setTimeout(()=>{ try{document.getElementById('schedaLoaderMsg').textContent='Analisi fonti specializzate: gamberorosso, parker, wine spectator…';}catch{} },3000);
   setSchedaPhase(3);
-  document.getElementById('schedaLoaderMsg').textContent='Strutturazione scheda tecnica…';
   const cy=new Date().getFullYear();
   const pdfSection = techSheetText
-    ? `\n=== SCHEDA TECNICA UFFICIALE DEL PRODUTTORE (PRIORITÀ ASSOLUTA) ===\nUsa questi dati con precedenza su tutto il resto per: affinamento, vinificazione, gradazione alcolica, vitigni.\n${techSheetText.slice(0,4000)}\n=== FINE SCHEDA TECNICA ===\n`
+    ? `\n=== SCHEDA TECNICA UFFICIALE DEL PRODUTTORE (PRIORITÀ ASSOLUTA) ===\nUsa questi dati con precedenza su tutto il resto.\n${techSheetText.slice(0,4000)}\n=== FINE SCHEDA TECNICA ===\n`
     : '';
-  const prompt=`Scheda tecnica professionale per il vino ESATTO: "${wineName}"${producer?' del produttore "'+producer+'"':''}. Annata: ${vintage||'non specificata'}. Anno corrente: ${cy}.
-ATTENZIONE: genera la scheda SOLO per questo vino specifico, NON per varianti (Riserva, Classico, Superiore, Gran Selezione ecc.) a meno che non facciano parte del nome esatto indicato sopra.
-${producerUrl?`Pagina ufficiale di riferimento: ${producerUrl}\n`:''}${pdfSection}${ctx?`=== DATI VERIFICATI DA RICERCA WEB ===\n${ctx}\n=== FINE ===`:'NESSUN DATO VERIFICATO: per vinificazione/affinamento/gradazione scrivi "Da verificare con il produttore".'}
+  const prompt=`Sei un Master Sommelier con accesso alla ricerca web. Esegui una ricerca approfondita e genera la scheda tecnica completa per il vino ESATTO: "${wineName}"${producer?' del produttore "'+producer+'"':''}. Annata: ${vintage||'non specificata'}. Anno corrente: ${cy}.
+ATTENZIONE: genera la scheda SOLO per questo vino specifico, NON per varianti (Riserva, Classico, Superiore, Gran Selezione ecc.) a meno che non facciano parte del nome esatto.
+${urlHint}${pdfSection}
+RICERCA RICHIESTA — cerca attivamente su web:
+1) Sito ufficiale del produttore (scheda tecnica PDF/HTML): vitigni con percentuali, vinificazione, affinamento, gradazione, resa, tiratura
+2) gamberorosso.it, vitae.ais.it, bibenda.it, slowine.it: premi Tre Bicchieri, Quattro Viti, Cinque Grappoli — TUTTE le annate
+3) robertparker.com, wine-spectator.com, jamessuckling.com, decanter.com, vinous.com, luca-maroni.com: punteggi e note — TUTTE le annate
+4) Storia cantina: fondazione, filosofia, legame territorio, aneddoti
 Restituisci SOLO questo JSON:
 {"denominazione":"","regione":"","produttore":"","vitigni":[{"nome":"","percentuale":""}],"tipologia":"","colore_hex":"#6B2737","regione_geo":{"lat":44.7,"lon":10.9,"zoom":9,"nome":""},"premi":[],"colore":{"tonalita":"","intensita":"","trasparenza":"","viscosita":""},"olfattivo":{"intensita":"","qualita":"","note_primarie":[],"note_secondarie":[],"note_terziarie":[],"descrizione":""},"gustativo":{"dolcezza":"secco","acidita_livello":"","acidita_score":65,"tannini_livello":"","tannini_qualita":"","tannini_score":78,"corpo_livello":"","corpo_score":82,"complessita_score":88,"alcol_perc":"","alcol_fonte":"","alcol_score":70,"persistenza_livello":"","persistenza_sec":"","persistenza_score":88,"equilibrio_livello":"","equilibrio_score":90,"descrizione":""},"abbinamenti":[{"cibo":"","descrizione":"","affinita":95},{"cibo":"","descrizione":"","affinita":90},{"cibo":"","descrizione":"","affinita":85},{"cibo":"","descrizione":"","affinita":80},{"cibo":"","descrizione":"","affinita":75},{"cibo":"","descrizione":"","affinita":70}],"abbinamenti_negativi":[{"cibo":"","motivo":""},{"cibo":"","motivo":""},{"cibo":"","motivo":""}],"longevita":{"stato_attuale":"In evoluzione","anno_inizio_picco":${parseInt(vintage||cy-3)+5},"anno_fine_picco":${parseInt(vintage||cy-3)+12},"anno_fine_declino":${parseInt(vintage||cy-3)+22},"descrizione":""},"conservazione":{"temperatura":"","umidita":"","posizione":"","luce":"","vibrazioni":"","anni_ancora":"","consiglio":""},"annate_comparabili":[{"anno":0,"note":""}],"difetti_potenziali":[{"difetto":"","rischio":"basso","descrizione":""}],"vinificazione":"","vinificazione_fonte":"","affinamento":"","affinamento_fonte":"","temperatura_servizio":"","decantazione":"","bicchiere":"","note_cantina":null,"note_vino":null,"contatti":{"indirizzo":null,"comune":null,"provincia":null,"sito_web":null,"telefono":null,"email":null},"immagine_bottiglia":null,"immagine_fonte":null,"nota_sommelier":""}
 Tutti gli _score: scala 0-100.
@@ -1715,7 +1677,7 @@ note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del 
 Se le informazioni di storytelling non sono disponibili lascia null.`;
   const res=await fetch(PERPLEXITY_PROXY,{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'sonar-pro',messages:[{role:'system',content:'Sei un Master Sommelier con enciclopedica conoscenza di tutti i principali vini italiani e internazionali, inclusi metodi di vinificazione, affinamento, vitigni e stili produttivi. Rispondi SOLO con JSON valido e completo, senza markdown, senza backtick, senza testo prima o dopo il JSON. Non lasciare mai campi obbligatori come vinificazione e affinamento vuoti o con "Da verificare" se il vino è documentato — usa la tua conoscenza e i dati dalla ricerca web.'},{role:'user',content:prompt}],temperature:.2,max_tokens:8000})
+    body:JSON.stringify({model:'sonar-pro',messages:[{role:'user',content:prompt}],temperature:.2,max_tokens:4000})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`Errore API Perplexity (${res.status})`);}
   const j=await res.json();
