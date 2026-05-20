@@ -1626,7 +1626,7 @@ function closeScheda(){
 function printScheda(){window.print();}
 
 /* ── Perplexity calls — proxy via Netlify Function (chiave segreta lato server) ── */
-const PERPLEXITY_PROXY = '/.netlify/functions/perplexity';
+const PERPLEXITY_PROXY = '/api/perplexity';  /* Edge Function — nessun timeout */
 
 async function webSearch(query){
   try{

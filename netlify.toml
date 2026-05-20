@@ -1,11 +1,7 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to   = "/.netlify/functions/:splat"
-  status = 200
+  edge_functions = "netlify/edge-functions"
 
 [[redirects]]
   from   = "/*"
