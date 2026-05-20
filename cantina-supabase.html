@@ -432,6 +432,12 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .aw-score-num{font-size:1.55rem;font-weight:700;color:var(--wine-mid);line-height:1;display:block;text-align:center}
 .aw-score-pts{font-size:.5rem;font-weight:500;color:var(--gray-500);margin-left:.1rem;vertical-align:super;display:inline}
 
+/* Aroma Wheel */
+.aroma-wheel-wrap{display:flex;flex-direction:column;align-items:center;margin:1.4rem 0 .5rem;gap:.8rem}
+.aroma-wheel-legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.awl-item{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:var(--gray-500)}
+.awl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
 /* Production */
 .prod-tile{background:var(--gray-100);border-radius:9px;padding:1rem;margin-bottom:.85rem;border-left:3px solid var(--wine)}
 .prod-tile:last-child{margin-bottom:0}
@@ -691,6 +697,10 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <div class="section">
           <div class="sec-title">03 <span>Profilo Olfattivo</span></div>
           <div id="sAroma"></div>
+          <div class="aroma-wheel-wrap">
+            <canvas id="aromaWheelCanvas"></canvas>
+            <div class="aroma-wheel-legend" id="aromaWheelLegend"></div>
+          </div>
         </div>
 
         <!-- 04 Struttura + radar -->
@@ -1766,6 +1776,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   /* 03 olfattivo */
   const o=d.olfattivo||{};
   document.getElementById('sAroma').innerHTML=`<div class="aroma-row"><div class="aroma-stat"><div class="st-label">Intensità</div><div class="st-val">${o.intensita||'—'}</div></div><div class="aroma-stat"><div class="st-label">Qualità Olfattiva</div><div class="st-val">${o.qualita||'—'}</div></div></div>${btg('Note Primarie',o.note_primarie,'tag-primary')}${btg('Note Secondarie',o.note_secondarie,'tag-secondary')}${btg('Note Terziarie',o.note_terziarie,'tag-tertiary')}${o.descrizione?`<p class="aroma-desc">${o.descrizione}</p>`:''}`;
+  buildAromaWheel(o.note_primarie,o.note_secondarie,o.note_terziarie);
   /* 04 struttura */
   document.getElementById('sStruct').innerHTML=[{name:'Acidità',val:g.acidita_livello,score:g.acidita_score||50},{name:'Tannini',val:`${g.tannini_livello||''} – ${g.tannini_qualita||''}`,score:g.tannini_score||50},{name:'Corpo',val:g.corpo_livello,score:g.corpo_score||50},{name:'Alcol',val:g.alcol_perc,score:g.alcol_score||50},{name:'Persistenza',val:g.persistenza_livello,score:g.persistenza_score||50},{name:'Equilibrio',val:g.equilibrio_livello,score:g.equilibrio_score||50}].map(s=>`<div class="struct-item"><div class="struct-head"><span class="struct-name">${s.name}</span><span class="struct-val">${s.val||'—'}</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,s.score)}%"></div></div></div>`).join('');
   document.getElementById('sPalateDesc').textContent=g.descrizione||'';
@@ -1958,6 +1969,69 @@ function simulateLongevity(v){
   document.getElementById('longSimNote').textContent=vin!==longOffsets.originalVintage?`Annata originale: ${longOffsets.originalVintage} · SLI: ${lp.sli}/100 [Simulazione]`:`Annata analizzata: ${longOffsets.originalVintage} · SLI: ${lp.sli}/100`;
 }
 function shiftLongVintage(delta){const inp=document.getElementById('longSimVintage');const cur=parseInt(inp.value)||(longOffsets?.originalVintage||2018);inp.value=cur+delta;simulateLongevity(cur+delta);}
+
+/* ── Ruota degli Aromi ── */
+function _adjBright(hex,amt){const n=parseInt(hex.slice(1),16);const r=Math.max(0,Math.min(255,(n>>16)+amt)),g=Math.max(0,Math.min(255,((n>>8)&0xFF)+amt)),b=Math.max(0,Math.min(255,(n&0xFF)+amt));return'#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');}
+
+function buildAromaWheel(primarie,secondarie,terziarie){
+  const canvas=document.getElementById('aromaWheelCanvas');
+  const legend=document.getElementById('aromaWheelLegend');
+  if(!canvas)return;
+  const CATS=[
+    {label:'Primarie',  notes:primarie  ||[],base:'#7E3044',light:'#C4869A'},
+    {label:'Secondarie',notes:secondarie||[],base:'#B8900A',light:'#DEC97A'},
+    {label:'Terziarie', notes:terziarie ||[],base:'#5A4535',light:'#A89078'}
+  ].filter(c=>c.notes.length>0);
+  const total=CATS.reduce((s,c)=>s+c.notes.length,0);
+  if(total===0){canvas.style.display='none';legend.style.display='none';return;}
+  const SIZE=300,dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=SIZE*dpr;canvas.height=SIZE*dpr;
+  canvas.style.width=SIZE+'px';canvas.style.height=SIZE+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,SIZE,SIZE);
+  const cx=SIZE/2,cy=SIZE/2,R=SIZE/2-6;
+  const Rc=R*.22,Ri=R*.48; /* Rc=center radius, Ri=inner ring outer */
+  const GAP=0.028;
+  let a=-Math.PI/2;
+  CATS.forEach(cat=>{
+    const frac=cat.notes.length/total;
+    const span=frac*Math.PI*2-GAP;
+    const ns=span/cat.notes.length;
+    /* inner ring */
+    ctx.beginPath();
+    ctx.moveTo(cx+Rc*Math.cos(a),cy+Rc*Math.sin(a));
+    ctx.arc(cx,cy,Ri,a,a+span);
+    ctx.arc(cx,cy,Rc,a+span,a,true);
+    ctx.closePath();ctx.fillStyle=cat.base;ctx.fill();
+    /* category label */
+    {const mid=a+span/2,lr=(Rc+Ri)/2;
+     ctx.save();ctx.translate(cx+lr*Math.cos(mid),cy+lr*Math.sin(mid));ctx.rotate(mid+Math.PI/2);
+     ctx.fillStyle='rgba(255,255,255,.93)';ctx.font=`600 ${Math.max(8,Math.min(11,8+frac*14))}px Inter,sans-serif`;
+     ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(cat.label,0,0);ctx.restore();}
+    /* outer note sectors */
+    cat.notes.forEach((note,i)=>{
+      const s2=a+i*ns,e2=s2+ns-.008,m2=(s2+e2)/2;
+      ctx.beginPath();ctx.arc(cx,cy,R,s2,e2);ctx.arc(cx,cy,Ri,e2,s2,true);ctx.closePath();
+      ctx.fillStyle=i%2===0?cat.light:_adjBright(cat.light,-20);ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=.7;ctx.stroke();
+      const lr2=(Ri+R)/2,arcLen=ns*lr2;
+      if(arcLen>=13){
+        const mc=Math.max(3,Math.floor(arcLen/7.2));
+        let txt=note;if(txt.length>mc)txt=txt.slice(0,mc-1)+'…';
+        ctx.save();ctx.translate(cx+lr2*Math.cos(m2),cy+lr2*Math.sin(m2));ctx.rotate(m2+Math.PI/2);
+        ctx.fillStyle='rgba(44,24,16,.85)';ctx.font=`500 ${Math.min(9.5,Math.max(7,arcLen/10))}px Inter,sans-serif`;
+        ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,0,0);ctx.restore();
+      }
+    });
+    a+=span+GAP;
+  });
+  /* center */
+  ctx.beginPath();ctx.arc(cx,cy,Rc-1,0,Math.PI*2);ctx.fillStyle='#3D1420';ctx.fill();
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='700 12px Inter,sans-serif';ctx.fillText('Aromi',cx,cy-6);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='400 8.5px Inter,sans-serif';ctx.fillText(total+' note',cx,cy+6);
+  /* legend */
+  legend.innerHTML=CATS.map(c=>`<div class="awl-item"><div class="awl-dot" style="background:${c.base}"></div>${c.label} (${c.notes.length})</div>`).join('');
+}
 
 
 /* ══════════════════════════════════════════════════════
