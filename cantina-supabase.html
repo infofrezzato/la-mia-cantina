@@ -607,6 +607,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     <button class="btn btn-ghost" onclick="closeScheda()" style="flex-shrink:0">← Cantina</button>
     <div class="scheda-wine-label" id="schedaWineLabel"></div>
     <div class="scheda-toolbar-btns">
+      <button class="btn btn-ghost" onclick="regenerateScheda()" title="Rigenera scheda con una nuova chiamata API">🔄 Rigenera</button>
       <button class="btn btn-gold" onclick="printScheda()">🖨️ Stampa PDF</button>
     </div>
   </div>
@@ -1597,24 +1598,42 @@ function setSchedaLoading(on){
 }
 
 /* ── open / close ── */
-async function openScheda(id){
+let _currentSchedaId = null;
+
+async function openScheda(id, forceRegenerate=false){
   const wines=await dbLoad();
   const wine=wines.find(w=>w.id===id);
   if(!wine)return;
+  _currentSchedaId = id;
   const label=[wine.cantina,wine.nome,wine.annata].filter(Boolean).join(' — ');
   document.getElementById('schedaWineLabel').textContent=label;
   document.getElementById('schedaOverlay').style.display='block';
   document.getElementById('schedaCardArea').style.display='none';
   document.body.classList.add('scheda-open');
+
+  /* ── CACHE: se la scheda esiste già e non si forza la rigenerazione ── */
+  if(!forceRegenerate && wine._scheda){
+    try{
+      renderSheet(wine._scheda, wine.nome||'', String(wine.annata||''), wine.cantina||'', wine._schedaWebSearch||true);
+      showToast('📋 Scheda caricata dalla cache — clicca 🔄 per rigenerare','info');
+      return;
+    }catch(e){ /* cache corrotta → rigenera */ }
+  }
+
   setSchedaLoading(true);
   try{
     const{data,usedWebSearch}=await callPerplexity(wine.nome||'',String(wine.annata||''),wine.cantina||'',wine.urlRiferimento||'',wine._pdfText||_pdfText||'');
+    /* Salva in cache su Supabase */
+    await dbUpdate(id,{_scheda:data, _schedaWebSearch:usedWebSearch, _schedaDate:new Date().toISOString()});
     renderSheet(data,wine.nome||'',String(wine.annata||''),wine.cantina||'',usedWebSearch);
   }catch(e){
     setSchedaLoading(false);
     showToast('Errore generazione scheda: '+(e.message||'Riprova tra qualche istante'),'error');
     document.getElementById('schedaCardArea').style.display='block';
   }
+}
+async function regenerateScheda(){
+  if(_currentSchedaId) await openScheda(_currentSchedaId, true);
 }
 function closeScheda(){
   document.getElementById('schedaOverlay').style.display='none';
@@ -1633,7 +1652,7 @@ async function webSearch(query){
     const r=await fetch(PERPLEXITY_PROXY,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'sonar-pro',
+        model:'sonar',
         messages:[{role:'user',content:query}],
         temperature:0.1,max_tokens:2000
       })
@@ -1677,7 +1696,7 @@ note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del 
 Se le informazioni di storytelling non sono disponibili lascia null.`;
   const res=await fetch(PERPLEXITY_PROXY,{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'sonar-pro',messages:[{role:'user',content:prompt}],temperature:.2,max_tokens:4000})
+    body:JSON.stringify({model:'sonar',messages:[{role:'user',content:prompt}],temperature:.2,max_tokens:4000})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`Errore API Perplexity (${res.status})`);}
   const j=await res.json();
