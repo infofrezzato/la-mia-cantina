@@ -381,6 +381,10 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .ls-evolving{background:rgba(234,179,8,.1);color:#92400e;border:1px solid rgba(234,179,8,.25)}
 .ls-peak{background:rgba(22,163,74,.1);color:#166534;border:1px solid rgba(22,163,74,.2)}
 .ls-decline{background:rgba(220,38,38,.1);color:#991b1b;border:1px solid rgba(220,38,38,.2)}
+.row-long-badge{font-size:.6rem;font-weight:600;letter-spacing:.03em;margin-top:.22rem;display:block;padding:.1rem .42rem;border-radius:4px;line-height:1.4;width:fit-content}
+.row-long-badge.ls-evolving{background:rgba(234,179,8,.09);color:#92400e;border:1px solid rgba(234,179,8,.22)}
+.row-long-badge.ls-peak{background:rgba(22,163,74,.09);color:#166534;border:1px solid rgba(22,163,74,.2)}
+.row-long-badge.ls-decline{background:rgba(220,38,38,.07);color:#991b1b;border:1px solid rgba(220,38,38,.18)}
 .longevity-chart-wrap{position:relative;height:260px;margin:1rem 0}
 .long-sim-bar{display:flex;align-items:center;gap:.6rem;margin-top:.75rem}
 .long-sim-bar input{padding:.38rem .6rem;border:1px solid var(--gray-200);border-radius:6px;font-size:.82rem;color:var(--text);width:90px;background:var(--gray-100)}
@@ -1111,9 +1115,23 @@ async function renderTable() {
     const schedaTitle   = hasScheda ? 'Visualizza scheda (dalla cache — gratis)' : 'Genera Scheda Tecnica con Perplexity';
     const schedaIcon    = hasScheda ? '📋' : '📄';
     const schedaStyle   = hasScheda ? 'color:#4ADE80' : '';
+    let longBadge = '';
+    if (hasScheda && w._scheda) {
+      try {
+        const sd = w._scheda;
+        const sg = sd.gustativo || {};
+        const sl = sd.longevita || {};
+        const vin = parseInt(w.annata) || new Date().getFullYear() - 6;
+        const lp2 = calcLongevityParams(vin, sl.anno_inizio_picco, sl.anno_fine_picco, sl.anno_fine_declino, sg);
+        const cy2 = new Date().getFullYear();
+        if (lp2.peakStart > cy2 + 1)        longBadge = `<div class="row-long-badge ls-evolving">🟡 In evoluzione · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+        else if (lp2.peakEnd >= cy2)         longBadge = `<div class="row-long-badge ls-peak">🟢 Al picco · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+        else                                 longBadge = `<div class="row-long-badge ls-decline">🔴 In declino · picco ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+      } catch(e) {}
+    }
     return `<tr>
       <td class="td-cantina">${esc(w.cantina||'—')}</td>
-      <td class="td-nome">${esc(w.nome||'—')}</td>
+      <td class="td-nome">${esc(w.nome||'—')}${longBadge}</td>
       <td class="td-annata">${w.annata||'—'}</td>
       <td>${badge}</td>
       <td class="td-qty">${totale}</td>
@@ -1761,13 +1779,15 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   {const cy2=new Date().getFullYear();let statoLabel,sc2,ld;
    if(lp.peakStart>cy2+1){
      statoLabel='In evoluzione';sc2='ls-evolving';
-     ld=`Ancora in evoluzione: raggiungerà il suo picco espressivo tra il ${lp.peakStart} e il ${lp.peakEnd}. Potenziale di conservazione consigliato fino al ${lp.declineEnd}.`;
+     ld=`Ancora in evoluzione: la finestra di beva ottimale è prevista tra il ${lp.peakStart} e il ${lp.peakEnd}. È consigliabile attendere almeno fino al ${lp.peakStart} per aprirlo al meglio delle sue potenzialità.`;
    }else if(lp.peakEnd>=cy2){
      statoLabel='Al picco espressivo';sc2='ls-peak';
-     ld=`Attualmente nella sua finestra di picco ottimale (${lp.peakStart}–${lp.peakEnd}). Consumare preferibilmente entro il ${lp.declineEnd} per apprezzarne la piena espressione.`;
+     ld=`Siamo nella finestra di beva ottimale (${lp.peakStart}–${lp.peakEnd}): è il momento ideale per aprirlo e goderne la piena espressione. Non attendere oltre il ${lp.peakEnd} per coglierlo al meglio.`;
    }else{
+     const anniDopo=cy2-lp.peakEnd;
+     const nuance=anniDopo<=3?'da poco':'ormai da alcuni anni';
      statoLabel='In declino qualitativo';sc2='ls-decline';
-     ld=`Ha superato il suo picco espressivo (${lp.peakStart}–${lp.peakEnd}). La curva di declino qualitativo è iniziata attorno al ${lp.declineEnd}. Se conservato in condizioni ottimali, può ancora offrire interessanti note evolutive.`;
+     ld=`Ha superato il suo picco espressivo (${lp.peakStart}–${lp.peakEnd}) ${nuance}. Se conservato in condizioni ottimali può ancora offrire note evolutive interessanti, ma la curva qualitativa è in discesa.`;
    }
    document.getElementById('sLongState').innerHTML=`<div class="long-state ${sc2}">${statoLabel}</div>`;
    document.getElementById('sLongDesc').textContent=ld;}
@@ -1876,21 +1896,31 @@ function buildRadarChart(scores){
 }
 
 function calcLongevityParams(vintage,rawPs,rawPe,rawDd,g){
-  const g2=g||{};const tannini=g2.tannini_score||68,acidita=g2.acidita_score||65,corpo=g2.corpo_score||68,compl=g2.complessita_score||70;
-  const sli=tannini*.38+acidita*.30+corpo*.18+compl*.14;
+  const g2=g||{};
+  const tannini=g2.tannini_score||68, acidita=g2.acidita_score||65, corpo=g2.corpo_score||68;
+  const compl=g2.complessita_score||70, equil=g2.equilibrio_score||70, persist=g2.persistenza_score||65;
+  /* SLI — Structural Longevity Index (0-100)
+     Tannini  34%: principale elemento strutturale per rossi (preserva e prolunga)
+     Acidità  27%: conservante naturale, primario per bianchi
+     Corpo    16%: estratto e volume → base per evolvere
+     Compl.   13%: complessità aromatica → potenziale di sviluppo
+     Equilibr. 6%: armonia strutturale → declino più morbido e prevedibile
+     Persist.  4%: lunghezza del finale → indicatore di qualità e tensione */
+  const sli=tannini*.34+acidita*.27+corpo*.16+compl*.13+equil*.06+persist*.04;
   const structMult=Math.min(1.22,Math.max(0.68,sli/70));
   /* Cap realistico in anni dalla vendemmia, calibrato sull'SLI strutturale:
-     < 65 → vini leggeri/medi     max 18 anni
-     65-73 → buona struttura      max 25 anni
-     73-82 → ottima struttura     max 32 anni
-     82-90 → eccellente           max 42 anni
-     > 90  → vini eterni (Barolo Riserva, Brunello, Grand Cru Bdx) max 55 anni */
-  const maxYears = sli>=90?55 : sli>=82?42 : sli>=73?32 : sli>=65?25 : 18;
+     < 62 → vini leggeri/immediati     max 15 anni
+     62-70 → struttura media           max 22 anni
+     70-78 → buona struttura           max 28 anni
+     78-86 → ottima struttura          max 38 anni
+     86-93 → eccellente                max 48 anni
+     > 93  → vini eterni (Barolo Ris., Brunello Ris., Grand Cru Bdx, Vintage Port) max 60 anni */
+  const maxYears = sli>=93?60 : sli>=86?48 : sli>=78?38 : sli>=70?28 : sli>=62?22 : 15;
   const dPs=(rawPs||vintage+5)-vintage,dPe=(rawPe||vintage+12)-vintage,dDd=(rawDd||vintage+22)-vintage;
   const adjDPs=Math.max(2,Math.round(dPs*structMult));
   const adjDPe=Math.max(adjDPs+2,Math.round(dPe*structMult*.87));
   const adjDDd=Math.min(maxYears,Math.max(adjDPe+3,Math.round(dDd*structMult*.80)));
-  const peakScore=Math.round(Math.min(97,66+sli*.40)),startScore=Math.round(Math.max(14,Math.min(50,74-sli*.70)));
+  const peakScore=Math.round(Math.min(97,65+sli*.42)),startScore=Math.round(Math.max(12,Math.min(52,75-sli*.72)));
   return{peakStart:vintage+adjDPs,peakEnd:vintage+adjDPe,declineEnd:vintage+adjDDd,peakScore,startScore,sli:Math.round(sli),maxYears};
 }
 
