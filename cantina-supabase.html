@@ -423,7 +423,12 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .defect-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:.18rem}
 .defect-desc{font-size:.75rem;color:var(--gray-500);line-height:1.45}
 
-/* Awards */
+/* Awards — scoreboard */
+.awards-scoreboard{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem;padding:.9rem 1.1rem;margin-bottom:1.4rem;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(107,39,55,.05));border-radius:12px;border:1px solid rgba(201,168,76,.22)}
+.aw-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .7rem;background:#FFFDF9;border-radius:20px;border:1px solid var(--gray-200);font-size:.8rem;font-weight:600;color:var(--gray-700);white-space:nowrap}
+.aw-chip-count{color:var(--wine);font-weight:700;font-size:.82rem}
+.aw-sb-total{margin-left:auto;font-size:.7rem;color:var(--gray-400);font-style:italic;white-space:nowrap}
+/* Awards — cards */
 .award-card{display:flex;align-items:flex-start;gap:1rem;padding:1rem;border-radius:9px;margin-bottom:.75rem;border:1px solid var(--gray-200)}
 .award-card:last-child{margin-bottom:0}
 .tier-gold{background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.3)}
@@ -1766,7 +1771,12 @@ Esegui queste query di ricerca esplicite:
   • "${wineName}" "${producer||wineName}" Robert Parker Wine Advocate score
   • "${wineName}" "${producer||wineName}" Wine Spectator score
   • "${wineName}" "${producer||wineName}" Decanter score
-Cerca premi per TUTTE le annate disponibili (non solo l'annata richiesta).
+  • "${wineName}" "${producer||wineName}" Wine Enthusiast score
+  • "${wineName}" "${producer||wineName}" Falstaff Punkte
+  • "${wineName}" "${producer||wineName}" Veronelli punteggio
+  • "${producer||wineName}" premi riconoscimenti storia vini premiati
+  • "${wineName}" "migliore vino" OR "wine of the year" OR "eccellenza" OR "premio speciale"
+Cerca premi per TUTTE le annate disponibili (non solo l'annata richiesta). Raccogli lo storico completo.
 Se la ricerca web non restituisce risultati, usa la tua conoscenza enciclopedica: sei un Master Sommelier e conosci i premi dei vini italiani e internazionali più importanti.
 NON lasciare premi:[] se il vino è conosciuto — è inaccettabile omettere Tre Bicchieri o altri premi noti.
 
@@ -1885,51 +1895,69 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   document.getElementById('sDefects').innerHTML=(d.difetti_potenziali||[]).map(df=>{const rc=df.rischio==='alto'?'risk-high':df.rischio==='medio'?'risk-medium':'risk-low';return`<div class="defect-item"><span class="defect-risk ${rc}">${df.rischio||'basso'}</span><div><div class="defect-name">${df.difetto||'—'}</div><div class="defect-desc">${df.descrizione||''}</div></div></div>`;}).join('');
   /* 09 premi */
   const awards=d.premi||[];
+  const orgLabel={gambero_rosso:'Gambero Rosso',ais_vitae:'AIS Vitae',bibenda:'Bibenda',slow_wine:'Slow Wine',vini_buoni_italia:"Vini Buoni d'Italia",luca_maroni:'Luca Maroni',parker:'Robert Parker',wine_spectator:'Wine Spectator',james_suckling:'James Suckling',decanter:'Decanter',vinous:'Vinous',wine_enthusiast:'Wine Enthusiast',falstaff:'Falstaff',veronelli:'Veronelli'};
   function getAwardVisual(a){
     const g=(a.guida||'').toLowerCase().replace(/-/g,'_');
     const lv=(a.livello||'').toLowerCase();
     const pt=a.punteggio;
     if(g==='gambero_rosso'){
       if(lv.includes('tre'))return'<span class="aw-glasses">🍷🍷🍷</span>';
-      if(lv.includes('due_bicchieri_rossi'))return'<span class="aw-glasses">🍷🍷</span>';
+      if(lv.includes('due_bicchieri_rossi')||lv==='due_bicchieri_rossi')return'<span class="aw-glasses">🍷🍷</span>';
       if(lv.includes('due'))return'<span class="aw-glasses aw-grey">🍷🍷</span>';
-      if(lv.includes('un'))return'<span class="aw-glasses aw-grey">🍷</span>';
-      return'<span class="aw-glasses">🍷</span>';
+      return'<span class="aw-glasses aw-grey">🍷</span>';
     }
-    if(g==='ais_vitae'){
-      const n=lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;
-      return`<span class="aw-viti">${'🌿'.repeat(n)}</span>`;
-    }
-    if(g==='bibenda'){
-      const n=lv.includes('cinque')?5:lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;
-      return`<span class="aw-grappoli">${'🍇'.repeat(n)}</span>`;
-    }
-    if(g==='slow_wine'){
-      const ic=lv.includes('chiocciola')?'🐌':lv.includes('grande')?'⭐🍾':'🍾';
-      return`<span class="aw-slow">${ic}</span>`;
-    }
-    if(g==='vini_buoni_italia'){
-      const m=lv.match(/(\d)/);const n=m?parseInt(m[1]):5;
-      const crown=lv.includes('corona')?'👑':'';
-      return`<span class="aw-vbi">${crown}${'⭐'.repeat(n)}</span>`;
-    }
-    if(pt!==null&&pt!==undefined&&pt!==''){
-      return`<span class="aw-score-num">${pt}<span class="aw-score-pts">pt</span></span>`;
-    }
+    if(g==='ais_vitae'){const n=lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;return`<span class="aw-viti">${'🌿'.repeat(n)}</span>`;}
+    if(g==='bibenda'){const n=lv.includes('cinque')?5:lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;return`<span class="aw-grappoli">${'🍇'.repeat(n)}</span>`;}
+    if(g==='slow_wine'){const ic=lv.includes('chiocciola')?'🐌':lv.includes('grande')?'⭐🍾':'🍾';return`<span class="aw-slow">${ic}</span>`;}
+    if(g==='vini_buoni_italia'){const m=lv.match(/(\d)/);const n=m?parseInt(m[1]):5;return`<span class="aw-vbi">${lv.includes('corona')?'👑':''}${'⭐'.repeat(n)}</span>`;}
+    if(pt!==null&&pt!==undefined&&pt!=='')return`<span class="aw-score-num">${pt}<span class="aw-score-pts">pt</span></span>`;
     const tier=(a.tier||'silver').toLowerCase();
     return tier==='gold'?'🏆':tier==='silver'?'🥈':'🥉';
   }
-  const orgLabel={gambero_rosso:'Gambero Rosso',ais_vitae:'AIS Vitae',bibenda:'Bibenda',slow_wine:'Slow Wine',vini_buoni_italia:"Vini Buoni d'Italia",luca_maroni:'Luca Maroni',parker:'Robert Parker',wine_spectator:'Wine Spectator',james_suckling:'James Suckling',decanter:'Decanter',vinous:'Vinous'};
-  document.getElementById('sAwards').innerHTML=awards.length?awards.map(a=>{
-    const tier=(a.tier||'silver').toLowerCase();
-    const g=(a.guida||'').toLowerCase().replace(/-/g,'_');
-    const aVin=a.annata_vino?String(a.annata_vino):'';
-    const isOther=aVin&&rawVintage&&aVin!==String(rawVintage);
-    const visual=getAwardVisual(a);
-    const org=a.organizzazione||orgLabel[g]||'';
-    const meta=[org,a.anno_assegnazione?String(a.anno_assegnazione):''].filter(Boolean).join(' · ');
-    return`<div class="award-card tier-${tier}"><div class="award-medal">${visual}</div><div class="award-body"><div class="award-name">${a.nome||'—'}${isOther?`<span class="award-other-chip">⚠ annata ${aVin}</span>`:''}</div><div class="award-meta">${meta}</div>${a.descrizione?`<div class="award-desc">${a.descrizione}</div>`:''}</div></div>`;
-  }).join(''):'<div class="no-awards">Nessun premio trovato online per questo vino. Potrebbero esistere riconoscimenti non indicizzati — verifica direttamente sul sito del produttore o sulle guide specializzate.</div>';
+  /* scoreboard */
+  function buildScoreboard(list){
+    if(!list.length)return'';
+    const ORDER=['gambero_rosso','ais_vitae','bibenda','slow_wine','vini_buoni_italia','luca_maroni','parker','wine_spectator','james_suckling','decanter','vinous','wine_enthusiast','falstaff','veronelli','altro'];
+    const map={};
+    list.forEach(a=>{
+      const g=(a.guida||'altro').toLowerCase().replace(/-/g,'_');
+      const key=ORDER.includes(g)?g:'altro';
+      if(!map[key])map[key]={items:[],topViz:null};
+      map[key].items.push(a);
+      if(!map[key].topViz)map[key].topViz=getAwardVisual(a);
+    });
+    const chips=ORDER.filter(g=>map[g]).map(g=>{
+      const{items,topViz}=map[g];
+      const scores=items.map(a=>Number(a.punteggio)).filter(n=>n>0);
+      if(scores.length){
+        const best=Math.max(...scores);
+        const cnt=scores.length>1?`<span class="aw-chip-count">×${scores.length}</span>`:'';
+        return`<div class="aw-chip">${topViz}<strong>${best}pt</strong>${cnt}</div>`;
+      }
+      const cnt=items.length>1?`<span class="aw-chip-count">×${items.length}</span>`:'';
+      return`<div class="aw-chip">${topViz}${cnt}</div>`;
+    });
+    return`<div class="awards-scoreboard">${chips.join('')}<span class="aw-sb-total">${list.length} riconosciment${list.length===1?'o':'i'}</span></div>`;
+  }
+  /* sort: gold→silver→bronze, poi anno desc */
+  const TIER_ORD={gold:0,silver:1,bronze:2};
+  const sorted=[...awards].sort((a,b)=>{
+    const ta=TIER_ORD[(a.tier||'silver').toLowerCase()]??2;
+    const tb=TIER_ORD[(b.tier||'silver').toLowerCase()]??2;
+    if(ta!==tb)return ta-tb;
+    return(b.anno_assegnazione||0)-(a.anno_assegnazione||0);
+  });
+  document.getElementById('sAwards').innerHTML=sorted.length
+    ?buildScoreboard(sorted)+sorted.map(a=>{
+        const tier=(a.tier||'silver').toLowerCase();
+        const g=(a.guida||'').toLowerCase().replace(/-/g,'_');
+        const aVin=a.annata_vino?String(a.annata_vino):'';
+        const isOther=aVin&&rawVintage&&aVin!==String(rawVintage);
+        const org=a.organizzazione||orgLabel[g]||'';
+        const meta=[org,a.anno_assegnazione?String(a.anno_assegnazione):''].filter(Boolean).join(' · ');
+        return`<div class="award-card tier-${tier}"><div class="award-medal">${getAwardVisual(a)}</div><div class="award-body"><div class="award-name">${a.nome||'—'}${isOther?`<span class="award-other-chip">⚠ annata ${aVin}</span>`:''}</div><div class="award-meta">${meta}</div>${a.descrizione?`<div class="award-desc">${a.descrizione}</div>`:''}</div></div>`;
+      }).join('')
+    :'<div class="no-awards">Nessun premio trovato online per questo vino. Potrebbero esistere riconoscimenti non indicizzati — verifica direttamente sul sito del produttore o sulle guide specializzate.</div>';
   /* 10 produzione */
   document.getElementById('sProd').innerHTML=[{label:'Metodo di Vinificazione',value:d.vinificazione,fonte:d.vinificazione_fonte},{label:'Affinamento',value:d.affinamento,fonte:d.affinamento_fonte}].map(p=>`<div class="prod-tile"><div class="st-label">${p.label}</div><div class="st-val">${prodVal(p.value)}</div>${prodSourceChip(p.fonte)}</div>`).join('');
   /* 11 servizio */
