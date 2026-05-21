@@ -1838,7 +1838,7 @@ async function openScheda(id, forceRegenerate=false){
   const wine=wines.find(w=>w.id===id);
   if(!wine)return;
   _currentSchedaId = id;
-  const label=[wine.cantina,wine.nome,wine.annata].filter(Boolean).join(' — ');
+  const label=[toTitleCase(wine.cantina),toTitleCase(wine.nome),wine.annata].filter(Boolean).join(' — ');
   document.getElementById('schedaWineLabel').textContent=label;
   document.getElementById('schedaOverlay').style.display='block';
   document.getElementById('schedaCardArea').style.display='none';
@@ -1967,14 +1967,14 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   const{total,rows}=calcScore(g);
   document.getElementById('hColorSwatch').style.background=d.colore_hex||'#6B2737';
   document.getElementById('hTypePill').textContent=d.tipologia||'Vino';
-  document.getElementById('hName').textContent=rawName;
+  document.getElementById('hName').textContent=toTitleCase(rawName)||rawName;
   document.getElementById('hSub').textContent=`Annata ${rawVintage} · ${d.denominazione||''}`;
   document.getElementById('hScore').textContent=total;
   document.getElementById('hScoreLabel').textContent=scoreLabel(total);
   document.getElementById('scoreBreakdown').innerHTML=rows.map(r=>`<div class="sp-row"><span class="sp-row-name">${r.label} <span style="opacity:.45">×${Math.round(r.w*100)}%</span></span><div class="sp-bar-track"><div class="sp-bar-fill" style="width:${r.v}%"></div></div><span class="sp-row-val">${r.contrib}</span></div>`).join('');
   const srcBadge=usedWebSearch?`<span class="dsrc-badge dsrc-web">🔍 Ricerca web Perplexity Sonar Pro</span>`:`<span class="dsrc-badge dsrc-ai">✨ Stima da base dati AI</span>`;
   document.getElementById('hScoreMot').innerHTML=srcBadge;
-  document.getElementById('hMeta').innerHTML=[{label:'Regione',value:d.regione},{label:'Vitigni',value:fmtVitigni(d.vitigni)},{label:'Produttore',value:rawProducer||d.produttore}].map(m=>`<div class="hm-item"><span class="hm-label">${m.label}</span><span class="hm-value">${m.value||'—'}</span></div>`).join('');
+  document.getElementById('hMeta').innerHTML=[{label:'Regione',value:d.regione},{label:'Vitigni',value:fmtVitigni(d.vitigni)},{label:'Produttore',value:toTitleCase(rawProducer||d.produttore||'')||rawProducer||d.produttore}].map(m=>`<div class="hm-item"><span class="hm-label">${m.label}</span><span class="hm-value">${m.value||'—'}</span></div>`).join('');
   const hex=d.colore_hex||'#6B2737';
   document.getElementById('colorStrip').style.background=`linear-gradient(to right,${hex}cc,${hex},${hex}cc)`;
   const bw=document.getElementById('hBottleWrap'),bi=document.getElementById('hBottleImg'),bs=document.getElementById('hBottleSrc');
