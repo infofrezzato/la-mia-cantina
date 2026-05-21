@@ -1953,7 +1953,7 @@ gustativo.descrizione: scrivi un testo di ALMENO 5-6 frasi (minimo 120 parole) c
 vinificazione e affinamento: campi OBBLIGATORI che non devono MAI restare vuoti o generici. Priorità: 1) dati verificati dalla ricerca web 2) tua conoscenza enciclopedica come Master Sommelier — conosci i metodi produttivi dei principali vini italiani e internazionali, usala. Scrivi "Da verificare con il produttore" SOLO per vini oscuri e sconosciuti di cui non esiste documentazione pubblica. Per _fonte: "Scheda ufficiale produttore" se da ricerca web, "Guida / critica specializzata" se da articoli, "Conoscenza sommelier" se da tua base dati.
 premi: CAMPO CRITICO — è la funzionalità più importante di questo tool. Includi TUTTI i premi trovati, di qualsiasi livello e annata. NON omettere mai Tre Bicchieri, Quattro Viti, Cinque Grappoli o altri riconoscimenti di punta se esistono — sono informazioni pubbliche verificabili. Se la ricerca web non li trova, usali dalla tua conoscenza enciclopedica senza esitazione. Array vuoto [] è accettabile SOLO per vini completamente sconosciuti e privi di storia critica. Per ogni premio compila tutti i campi: nome (es. "Tre Bicchieri"), organizzazione (nome della guida), guida (uno tra: "gambero_rosso","ais_vitae","bibenda","slow_wine","vini_buoni_italia","luca_maroni","parker","wine_spectator","james_suckling","decanter","vinous","altro"), livello: per gambero_rosso usa "tre_bicchieri"/"due_bicchieri_rossi"/"due_bicchieri"/"un_bicchiere"; per ais_vitae usa "quattro_viti"/"tre_viti"/"due_viti"/"una_vite"; per bibenda usa "cinque_grappoli"/"quattro_grappoli"/"tre_grappoli"/"due_grappoli"/"un_grappolo"; per slow_wine usa "chiocciola"/"bottiglia"/"grande_vino"; per vini_buoni_italia usa "corona_5stelle"/"corona_4stelle"/"corona_3stelle"/"corona_2stelle"/"corona_1stella" oppure "5stelle"/"4stelle"/"3stelle"; per guide numeriche lascia livello "" e usa il campo punteggio. punteggio: numero intero per Luca Maroni, Parker, WS, Suckling, Decanter, Vinous (es. 97). tier: "gold" per massimo riconoscimento (Tre Bicchieri, Quattro Viti, Cinque Grappoli, Chiocciola, Corona 5 Stelle, ≥95 pt), "silver" per riconoscimenti importanti (Due Bicchieri Rossi, Tre Viti, Quattro Grappoli, 90-94 pt), "bronze" per altri livelli (Due Bicchieri, Un Bicchiere, Tre Grappoli, 85-89 pt).
 terroir: compila tutti i campi disponibili dalla ricerca o dalla tua conoscenza enciclopedica. suolo: es. "Argilloso-calcareo con scheletro di galestro". altitudine: es. "320–480 m slm". esposizione: es. "Sud-Ovest". allevamento: es. "Guyot doppio". eta_viti: es. "25–40 anni". resa_ettaro: es. "40 ql/ha". microclima: 1-2 frasi sul clima della zona (escursione termica, piovosità, venti). Ometti i campi che non riesci a reperire. descrizione: scrivi 4-6 frasi di prosa italiana fluente ed evocativa che sintetizzino il terroir come farebbe un esperto enologo — integra naturalmente i dati di suolo, sottosuolo, altitudine, esposizione, sistema di allevamento, età delle viti, resa e microclima. Evidenzia con **doppi asterischi** i valori chiave (es. "I vigneti si estendono a **320–480 m slm** su suoli **argilloso-calcarei con scheletro di galestro**..."). Non usare elenchi puntati né etichette esplicite. Se devi aggiungere una nota sulle fonti dei dati, aggiungila SEMPRE e SOLO alla fine del testo su una riga separata che inizia con "Nota: ".
-colore.descrizione: scrivi 3-4 frasi di prosa italiana che descrivano l'aspetto visivo del vino in modo elegante, integrando tonalità, intensità, trasparenza e viscosità. Evidenzia con **doppi asterischi** i valori chiave (es. "Si presenta con una veste **rubino intenso**..."). Non usare elenchi puntati né etichette esplicite. Se devi aggiungere una nota sulle fonti, aggiungila SEMPRE e SOLO alla fine su una riga separata che inizia con "Nota: ".
+colore.descrizione: scrivi 4-6 frasi di prosa italiana che descrivano il profilo sensoriale completo del vino — inizia dall'aspetto visivo (tonalità, intensità, trasparenza, archetti/viscosità) e prosegui con le prime sensazioni al palato (dolcezza, morbidezza, alcol, persistenza aromatica). Scrivi come un sommelier esperto che racconta il vino a chi non lo conosce ancora. Evidenzia con **doppi asterischi** i valori chiave (es. "Si presenta con una veste **rubino intenso**..."). Non usare elenchi puntati né etichette esplicite. IMPORTANTE: non inserire MAI note, avvisi o riferimenti alle fonti all'interno del testo — se necessario aggiungili SOLO alla fine su una riga separata che inizia esattamente con "Nota: ".
 note_cantina: 4-6 frasi di PURO STORYTELLING sulla CANTINA/AZIENDA: storia della famiglia o fondazione, valori e filosofia produttiva, legame col territorio, curiosità o aneddoti sull'azienda. NON inserire dati tecnici come affinamento, gradazione alcolica o descrizioni organolettiche.
 note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del nome, storia della vigna o parcella, aneddoti sulla sua creazione, elementi di unicità, citazioni del produttore. NON ripetere dati tecnici già presenti nelle altre sezioni.
 Se le informazioni di storytelling non sono disponibili lascia null.`;
@@ -2005,12 +2005,21 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
    if(tiles.length>0||t.microclima||t.descrizione){
      sec.style.display='';
      const mdBold=s=>(s||'').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-     const splitNota=s=>{const i=s.search(/\nNota:/i);return i>=0?[s.slice(0,i).trim(),s.slice(i).trim()]:[s.trim(),''];};
+     /* estrae note/avvisi dal testo — sia \nNota: che parentesi inline con keyword */
+     const extractNota=s=>{
+       const notes=[];
+       // 1) riga esplicita \nNota: ...
+       let clean=s.replace(/\n\s*Nota\s*:\s*/gi,'\x00').split('\x00');
+       if(clean.length>1){notes.push(...clean.slice(1).map(x=>x.trim()));s=clean[0].trim();}
+       // 2) parentesi inline con keyword disclaimer
+       s=s.replace(/\s*\(([^)]*(?:fonti\s+pubbliche|dati\s+di\s+mercato|consultati|stimat|valore\s+coerente|scheda\s+verific)[^)]*)\)/gi,(_,g)=>{notes.push(g.trim());return '';}).trim();
+       return[s,notes.join(' — ')];
+     };
      let terrHtml='';
      if(t.descrizione){
-       const[main,nota]=splitNota(t.descrizione);
+       const[main,nota]=extractNota(t.descrizione);
        terrHtml=`<p class="prose-text">${mdBold(main)}</p>`;
-       if(nota) terrHtml+=`<p class="prose-text" style="margin-top:.7rem;font-size:.78rem;color:var(--gray-500);font-style:italic">${mdBold(nota)}</p>`;
+       if(nota) terrHtml+=`<p class="prose-text" style="margin-top:.7rem;font-size:.78rem;color:var(--gray-500);font-style:italic">Nota: ${mdBold(nota)}</p>`;
      }else{
        const tParts=tiles.map(x=>`${x.lbl} <strong>${x.val}</strong>`).join(', ')+'.';
        terrHtml=`<p class="prose-text">${tParts}</p>`;
@@ -2020,10 +2029,16 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
    }else{sec.style.display='none';}}
   /* 02 sensoriale — prosa discorsiva */
   {const mdBold=s=>(s||'').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-  const splitNota=s=>{const i=s.search(/\nNota:/i);return i>=0?[s.slice(0,i).trim(),s.slice(i).trim()]:[s.trim(),''];};
+  const extractNota=s=>{
+    const notes=[];
+    let clean=s.replace(/\n\s*Nota\s*:\s*/gi,'\x00').split('\x00');
+    if(clean.length>1){notes.push(...clean.slice(1).map(x=>x.trim()));s=clean[0].trim();}
+    s=s.replace(/\s*\(([^)]*(?:fonti\s+pubbliche|dati\s+di\s+mercato|consultati|stimat|valore\s+coerente|scheda\s+verific)[^)]*)\)/gi,(_,g)=>{notes.push(g.trim());return '';}).trim();
+    return[s,notes.join(' — ')];
+  };
   let sensHtml='';
   if(c.descrizione){
-    const[main,nota]=splitNota(c.descrizione);
+    const[main,nota]=extractNota(c.descrizione);
     sensHtml=`<p class="prose-text">${mdBold(main)}</p>`;
     /* aggiungi alcol e persistenza se non già nella descrizione */
     const extras=[
@@ -2031,7 +2046,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
       (g.persistenza_sec||g.persistenza_livello)&&`persistenza <strong>${g.persistenza_sec||g.persistenza_livello}</strong>`
     ].filter(Boolean);
     if(extras.length) sensHtml+=`<p class="prose-text" style="margin-top:.5rem">${extras.join(', ')}.</p>`;
-    if(nota) sensHtml+=`<p class="prose-text" style="margin-top:.7rem;font-size:.78rem;color:var(--gray-500);font-style:italic">${mdBold(nota)}</p>`;
+    if(nota) sensHtml+=`<p class="prose-text" style="margin-top:.7rem;font-size:.78rem;color:var(--gray-500);font-style:italic">Nota: ${mdBold(nota)}</p>`;
   }else{
     const sParts=[
       c.tonalita&&`tonalità <strong>${c.tonalita}</strong>`,
