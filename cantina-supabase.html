@@ -2012,7 +2012,9 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
        let clean=s.replace(/\n\s*Nota\s*:\s*/gi,'\x00').split('\x00');
        if(clean.length>1){notes.push(...clean.slice(1).map(x=>x.trim()));s=clean[0].trim();}
        // 2) parentesi inline con keyword disclaimer
-       s=s.replace(/\s*\(([^)]*(?:fonti\s+pubbliche|dati\s+di\s+mercato|consultati|stimat|valore\s+coerente|scheda\s+verific)[^)]*)\)/gi,(_,g)=>{notes.push(g.trim());return '';}).trim();
+       s=s.replace(/\s*\(([^)]*(?:fonti\s+pubbliche|dati\s+di\s+mercato|consultati|stimat|valore\s+coerente|scheda\s+verific)[^)]*)\)/gi,(_,g)=>{notes.push(g.trim());return '';});
+       // 3) pulizia spazi doppi o spazio prima di punteggiatura
+       s=s.replace(/\s{2,}/g,' ').replace(/\s+([,.])/g,'$1').trim();
        return[s,notes.join(' — ')];
      };
      let terrHtml='';
