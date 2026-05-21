@@ -396,7 +396,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .ls-evolving{background:rgba(234,179,8,.1);color:#92400e;border:1px solid rgba(234,179,8,.25)}
 .ls-peak{background:rgba(22,163,74,.1);color:#166534;border:1px solid rgba(22,163,74,.2)}
 .ls-decline{background:rgba(220,38,38,.1);color:#991b1b;border:1px solid rgba(220,38,38,.2)}
-.row-long-badge{font-size:.6rem;font-weight:600;letter-spacing:.03em;margin-top:.22rem;display:block;padding:.1rem .42rem;border-radius:4px;line-height:1.4;width:fit-content}
+.row-long-badge{font-size:.6rem;font-weight:600;letter-spacing:.03em;display:inline-flex;align-items:center;padding:.18rem .48rem;border-radius:4px;line-height:1.4;white-space:nowrap}
 .row-long-badge.ls-evolving{background:rgba(234,179,8,.09);color:#92400e;border:1px solid rgba(234,179,8,.22)}
 .row-long-badge.ls-peak{background:rgba(22,163,74,.09);color:#166534;border:1px solid rgba(22,163,74,.2)}
 .row-long-badge.ls-decline{background:rgba(220,38,38,.07);color:#991b1b;border:1px solid rgba(220,38,38,.18)}
@@ -898,7 +898,21 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <div class="field"><label>Qtà Totale</label><input type="number" id="f-qtTotale" placeholder="6" min="0" step="1"></div>
         <div class="field"><label>Qtà Rimasta</label><input type="number" id="f-qtRimasta" placeholder="6" min="0" step="1"></div>
       </div>
-      <div class="form-row">
+      <div class="form-row-3">
+        <div class="field">
+          <label>Formato Bottiglia</label>
+          <select id="f-formato">
+            <option value="">— Standard (0,75 L) —</option>
+            <option value="0.375">0,375 L · Mezza bottiglia</option>
+            <option value="0.5">0,5 L · Demi</option>
+            <option value="0.75">0,75 L · Standard</option>
+            <option value="1.0">1,0 L · Litro</option>
+            <option value="1.5">1,5 L · Magnum</option>
+            <option value="3.0">3,0 L · Jeroboam</option>
+            <option value="4.5">4,5 L · Rehoboam</option>
+            <option value="6.0">6,0 L · Imperiale</option>
+          </select>
+        </div>
         <div class="field"><label>Prezzo Acquisto (€/bot.)</label><input type="number" id="f-prezzo" placeholder="35.00" step="0.01" min="0"></div>
         <div class="field"><label>Data di Bevuta</label><input type="date" id="f-dataBevuta"></div>
       </div>
@@ -1177,6 +1191,16 @@ async function updateStats() {
 ══════════════════════════════════════════════════════ */
 function computedVal(w) { return (Number(w.qtRimasta)||0)*(Number(w.prezzoAcquisto)||0); }
 
+/* Title Case italiano — articoli/preposizioni/congiunzioni restano minuscoli */
+const _TC_SKIP = new Set(['a','al','allo','alla','ai','agli','alle','con','col','coi','da','dal','dalla','dai','dagli','dalle','dallo','dei','degli','delle','della','dello','del','di','e','ed','fra','i','il','in','la','le','lo','gli','gli','ma','nel','nella','nei','negli','nelle','nello','o','od','per','se','su','sul','sulla','sui','sugli','sulle','sullo','tra','un','una','uno','d\'']);
+function toTitleCase(str) {
+  if (!str) return str;
+  return String(str).trim().toLowerCase().split(/\s+/).map((w, i) => {
+    if (i === 0 || !_TC_SKIP.has(w)) return w.charAt(0).toUpperCase() + w.slice(1);
+    return w;
+  }).join(' ');
+}
+
 async function renderTable() {
   const search  = document.getElementById('searchInput').value.toLowerCase().trim();
   const status  = document.getElementById('filterStatus').value;
@@ -1214,16 +1238,14 @@ async function renderTable() {
     if (w.bevuto)                           badge='<span class="badge badge-bev">Bevuto</span>';
     else if (rimasta<totale && rimasta>0)   badge='<span class="badge badge-part">Parziale</span>';
     else                                    badge='<span class="badge badge-cant">Cantina</span>';
-    const dataBevuta    = w.dataBevuta ? new Date(w.dataBevuta).toLocaleDateString('it-IT') : '—';
     const prezzoStr     = w.prezzoAcquisto ? '€ '+Number(w.prezzoAcquisto).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
     const valoreStr     = valore>0 ? '€ '+valore.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
-    const noteCell      = w.note ? `<span title="${esc(w.note)}">${esc(w.note)}</span>` : '<span style="opacity:.28">—</span>';
     const drinkBtn      = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">${ICO.glass}</button>` : '';
     const hasScheda     = !!w._scheda;
     const schedaTitle   = hasScheda ? 'Visualizza scheda (dalla cache — gratis)' : 'Genera Scheda Tecnica con Perplexity';
     const schedaIcon    = hasScheda ? ICO.clipboard : ICO.file;
     const schedaStyle   = hasScheda ? 'color:#4ADE80' : '';
-    let longBadge = '';
+    let longCell = '<span style="opacity:.22;font-size:.72rem">—</span>';
     if (hasScheda && w._scheda) {
       try {
         const sd = w._scheda;
@@ -1232,22 +1254,20 @@ async function renderTable() {
         const vin = parseInt(w.annata) || new Date().getFullYear() - 6;
         const lp2 = calcLongevityParams(vin, sl.anno_inizio_picco, sl.anno_fine_picco, sl.anno_fine_declino, sg);
         const cy2 = new Date().getFullYear();
-        if (lp2.peakStart > cy2 + 1)        longBadge = `<div class="row-long-badge ls-evolving"><span class="ls-dot"></span>In evoluzione · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
-        else if (lp2.peakEnd >= cy2)         longBadge = `<div class="row-long-badge ls-peak"><span class="ls-dot"></span>Al picco · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
-        else                                 longBadge = `<div class="row-long-badge ls-decline"><span class="ls-dot"></span>In declino · picco ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+        if (lp2.peakStart > cy2 + 1)      longCell = `<span class="row-long-badge ls-evolving"><span class="ls-dot"></span>In evoluzione · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
+        else if (lp2.peakEnd >= cy2)       longCell = `<span class="row-long-badge ls-peak"><span class="ls-dot"></span>Al picco · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
+        else                               longCell = `<span class="row-long-badge ls-decline"><span class="ls-dot"></span>In declino · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
       } catch(e) {}
     }
     return `<tr>
-      <td class="td-cantina">${esc(w.cantina||'—')}</td>
-      <td class="td-nome">${esc(w.nome||'—')}${longBadge}</td>
+      <td class="td-cantina">${esc(toTitleCase(w.cantina)||'—')}</td>
+      <td class="td-nome">${esc(toTitleCase(w.nome)||'—')}</td>
+      <td>${longCell}</td>
       <td class="td-annata">${w.annata||'—'}</td>
       <td>${badge}</td>
-      <td class="td-qty">${totale}</td>
       <td class="td-qty">${rimasta}</td>
-      <td class="td-date">${dataBevuta}</td>
       <td class="td-price">${prezzoStr}</td>
       <td class="td-value">${valoreStr}</td>
-      <td class="td-note">${noteCell}</td>
       <td>
         <div class="td-actions">
           <button class="icon-btn ib-scheda" title="${schedaTitle}" onclick="openScheda('${id}')" style="${schedaStyle}">${schedaIcon}</button>
@@ -1263,14 +1283,12 @@ async function renderTable() {
     <thead><tr>
       <th onclick="setSort('cantina')"        class="${sc('cantina')}">Cantina</th>
       <th onclick="setSort('nome')"           class="${sc('nome')}">Nome Vino</th>
+      <th class="nosort">Longevità</th>
       <th onclick="setSort('annata')"         class="${sc('annata')}">Annata</th>
       <th class="nosort">Stato</th>
-      <th onclick="setSort('qtTotale')"       class="${sc('qtTotale')}" style="text-align:center">Qtà Tot.</th>
       <th onclick="setSort('qtRimasta')"      class="${sc('qtRimasta')}" style="text-align:center">Qtà Rim.</th>
-      <th onclick="setSort('dataBevuta')"     class="${sc('dataBevuta')}">Data Bevuta</th>
       <th onclick="setSort('prezzoAcquisto')" class="${sc('prezzoAcquisto')}">Prezzo/Bot.</th>
       <th onclick="setSort('valore')"         class="${sc('valore')}">Valore</th>
-      <th class="nosort">Note</th>
       <th class="nosort">Azioni</th>
     </tr></thead>
     <tbody>${rows}</tbody>
@@ -1308,8 +1326,8 @@ async function renderTable() {
     const metaParts = [w.annata, w.note ? esc(w.note.substring(0,40))+(w.note.length>40?'…':'') : null].filter(Boolean);
     return `<div class="mwc">
       <div class="mwc-top" onclick="openScheda('${id2}')">
-        <div class="mwc-cantina">${esc(w.cantina||'—')}</div>
-        <div class="mwc-name">${esc(w.nome||'—')}</div>
+        <div class="mwc-cantina">${esc(toTitleCase(w.cantina)||'—')}</div>
+        <div class="mwc-name">${esc(toTitleCase(w.nome)||'—')}</div>
         ${metaParts.length ? `<div class="mwc-meta">${metaParts.join(' · ')}</div>` : ''}
         <div class="mwc-badges">${badge2}${lb2}</div>
       </div>
@@ -1353,7 +1371,7 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') document.queryS
    ADD / EDIT
 ══════════════════════════════════════════════════════ */
 function clearForm() {
-  ['f-cantina','f-nome','f-annata','f-qtTotale','f-qtRimasta','f-prezzo','f-dataBevuta','f-note','f-luogo','f-dataAcquisto','f-url'].forEach(id=>{ document.getElementById(id).value=''; });
+  ['f-cantina','f-nome','f-annata','f-qtTotale','f-qtRimasta','f-formato','f-prezzo','f-dataBevuta','f-note','f-luogo','f-dataAcquisto','f-url'].forEach(id=>{ document.getElementById(id).value=''; });
   document.getElementById('f-bevuto').checked=false;
   document.getElementById('bevutoLabel').textContent='In Cantina';
   document.getElementById('editId').value='';
@@ -1381,6 +1399,7 @@ async function openEditModal(id) {
   document.getElementById('f-luogo').value          = wine.luogoAcquisto   ||'';
   document.getElementById('f-dataAcquisto').value   = wine.dataAcquisto    ||'';
   document.getElementById('f-url').value            = wine.urlRiferimento  ||'';
+  document.getElementById('f-formato').value        = wine.formato         ||'';
   document.getElementById('f-bevuto').checked       = !!wine.bevuto;
   document.getElementById('bevutoLabel').textContent= wine.bevuto?'Bevuto — bottiglia terminata':'In Cantina';
   openModal('wineModal');
@@ -1404,6 +1423,7 @@ async function saveWine() {
     luogoAcquisto:  document.getElementById('f-luogo').value.trim()||null,
     dataAcquisto:   document.getElementById('f-dataAcquisto').value||null,
     urlRiferimento: document.getElementById('f-url').value.trim()||null,
+    formato:        document.getElementById('f-formato').value||null,
   };
   const editId = document.getElementById('editId').value;
   if (editId) { await dbUpdate(editId,wine); showToast('Vino aggiornato','success'); }
