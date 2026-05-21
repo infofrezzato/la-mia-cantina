@@ -1980,8 +1980,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   document.getElementById('hScore').textContent=total;
   document.getElementById('hScoreLabel').textContent=scoreLabel(total);
   document.getElementById('scoreBreakdown').innerHTML=rows.map(r=>`<div class="sp-row"><span class="sp-row-name">${r.label} <span style="opacity:.45">×${Math.round(r.w*100)}%</span></span><div class="sp-bar-track"><div class="sp-bar-fill" style="width:${r.v}%"></div></div><span class="sp-row-val">${r.contrib}</span></div>`).join('');
-  const srcBadge=usedWebSearch?`<span class="dsrc-badge dsrc-web">🔍 Ricerca web Perplexity Sonar Pro</span>`:`<span class="dsrc-badge dsrc-ai">✨ Stima da base dati AI</span>`;
-  document.getElementById('hScoreMot').innerHTML=srcBadge;
+  document.getElementById('hScoreMot').innerHTML='';
   document.getElementById('hMeta').innerHTML=[{label:'Regione',value:d.regione},{label:'Vitigni',value:fmtVitigni(d.vitigni)},{label:'Produttore',value:toTitleCase(rawProducer||d.produttore||'')||rawProducer||d.produttore}].map(m=>`<div class="hm-item"><span class="hm-label">${m.label}</span><span class="hm-value">${m.value||'—'}</span></div>`).join('');
   const hex=d.colore_hex||'#6B2737';
   document.getElementById('colorStrip').style.background=`linear-gradient(to right,${hex}cc,${hex},${hex}cc)`;
