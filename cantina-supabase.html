@@ -322,7 +322,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .hm-label{font-size:.62rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.38)}
 .hm-value{font-size:.88rem;font-weight:500;color:rgba(255,255,255,.82)}
 .color-strip{height:8px;width:100%}
-.card-body{padding:2.75rem 3rem;background:#FFFDF9}
+.card-body{padding:2.75rem 3rem;background:#FFFDF9;color:var(--text)}
 .section{margin-bottom:2.75rem;padding-bottom:2.75rem;border-bottom:1px solid var(--gray-200)}
 .section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .sec-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:var(--wine);margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem}
@@ -464,7 +464,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .terroir-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin:.5rem 0}
 @media(min-width:520px){.terroir-grid{grid-template-columns:repeat(4,1fr)}}
 .terroir-tile{background:var(--gray-100);border-radius:9px;padding:.85rem 1rem;border-left:3px solid var(--gold)}
-.terroir-tile .tt-icon{font-size:1.05rem;margin-bottom:.28rem}
+.terroir-tile .tt-icon{line-height:0;margin-bottom:.4rem}
 .terroir-tile .tt-lbl{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.22rem}
 .terroir-tile .tt-val{font-size:.82rem;font-weight:600;color:var(--text);line-height:1.35}
 .terroir-note{font-size:.8rem;color:var(--gray-500);margin-top:.8rem;line-height:1.65;font-style:italic}
@@ -1864,11 +1864,15 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   initMap(d.regione_geo,d.regione);
   /* Terroir */
   {const t=d.terroir||{};
+   const TI=(p)=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--wine)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
    const tiles=[
-     {icon:'🪨',lbl:'Suolo',val:t.suolo},{icon:'⛰️',lbl:'Sottosuolo',val:t.sottosuolo},
-     {icon:'📏',lbl:'Altitudine',val:t.altitudine},{icon:'🧭',lbl:'Esposizione',val:t.esposizione},
-     {icon:'🌿',lbl:'Allevamento',val:t.allevamento},{icon:'🌳',lbl:'Età Viti',val:t.eta_viti},
-     {icon:'⚖️',lbl:'Resa/Ettaro',val:t.resa_ettaro}
+     {icon:TI('<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/>'),lbl:'Suolo',val:t.suolo},
+     {icon:TI('<path d="M3 6l4-3 4 3 4-3 4 3M3 12l4-3 4 3 4-3 4 3M3 18l4-3 4 3 4-3 4 3"/>'),lbl:'Sottosuolo',val:t.sottosuolo},
+     {icon:TI('<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>'),lbl:'Altitudine',val:t.altitudine},
+     {icon:TI('<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>'),lbl:'Esposizione',val:t.esposizione},
+     {icon:TI('<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>'),lbl:'Allevamento',val:t.allevamento},
+     {icon:TI('<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),lbl:'Età Viti',val:t.eta_viti},
+     {icon:TI('<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>'),lbl:'Resa/Ettaro',val:t.resa_ettaro}
    ].filter(x=>x.val&&x.val.trim());
    const sec=document.getElementById('sTerrSec');
    if(tiles.length>0||t.microclima){
@@ -1934,19 +1938,32 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
     const g=(a.guida||'').toLowerCase().replace(/-/g,'_');
     const lv=(a.livello||'').toLowerCase();
     const pt=a.punteggio;
+    /* mini SVG helper: path, stroke-color, repeat count, width, height */
+    const AW=(p,c,n=1,w=13,h=13)=>Array(n).fill(`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin:0 .5px">${p}</svg>`).join('');
+    const GLASS='<path d="M8 22h8M12 11v11M7 3h10l-2 8a4 4 0 0 1-6 0L7 3z"/>';
+    const LEAF='<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>';
+    const GRAPE='<circle cx="9.5" cy="9" r="3.5"/><circle cx="14.5" cy="9" r="3.5"/><circle cx="12" cy="14.5" r="3.5"/><line x1="12" y1="2" x2="12" y2="5.5"/>';
+    const BOTTLE='<path d="M9 3h6M8 3v3.5c0 1.4-.8 2.5-2 3.2V21h12V9.7c-1.2-.7-2-1.8-2-3.2V3"/>';
+    const STAR='<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
+    const CROWN='<path d="M2 20h20M4 20V10l4 4 4-8 4 8 4-4v10"/>';
+    const MEDAL='<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>';
     if(g==='gambero_rosso'){
-      if(lv.includes('tre'))return'<span class="aw-glasses">🍷🍷🍷</span>';
-      if(lv.includes('due_bicchieri_rossi')||lv==='due_bicchieri_rossi')return'<span class="aw-glasses">🍷🍷</span>';
-      if(lv.includes('due'))return'<span class="aw-glasses aw-grey">🍷🍷</span>';
-      return'<span class="aw-glasses aw-grey">🍷</span>';
+      const n=lv.includes('tre')?3:lv.includes('due')?2:1;
+      const c=(lv.includes('tre')||lv.includes('due_bicchieri_rossi'))?'#6B2737':'#9E8A8E';
+      return`<span class="aw-glasses">${AW(GLASS,c,n)}</span>`;
     }
-    if(g==='ais_vitae'){const n=lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;return`<span class="aw-viti">${'🌿'.repeat(n)}</span>`;}
-    if(g==='bibenda'){const n=lv.includes('cinque')?5:lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;return`<span class="aw-grappoli">${'🍇'.repeat(n)}</span>`;}
-    if(g==='slow_wine'){const ic=lv.includes('chiocciola')?'🐌':lv.includes('grande')?'⭐🍾':'🍾';return`<span class="aw-slow">${ic}</span>`;}
-    if(g==='vini_buoni_italia'){const m=lv.match(/(\d)/);const n=m?parseInt(m[1]):5;return`<span class="aw-vbi">${lv.includes('corona')?'👑':''}${'⭐'.repeat(n)}</span>`;}
+    if(g==='ais_vitae'){const n=lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;return`<span class="aw-viti">${AW(LEAF,'#2E7D32',n)}</span>`;}
+    if(g==='bibenda'){const n=lv.includes('cinque')?5:lv.includes('quattro')?4:lv.includes('tre')?3:lv.includes('due')?2:1;return`<span class="aw-grappoli">${AW(GRAPE,'#7B1FA2',n)}</span>`;}
+    if(g==='slow_wine'){
+      if(lv.includes('chiocciola'))return`<span class="aw-slow">${AW('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#1565C0"/>','#1565C0')}</span>`;
+      if(lv.includes('grande'))return`<span class="aw-slow">${AW(STAR,'#F57C00')}${AW(BOTTLE,'#1565C0')}</span>`;
+      return`<span class="aw-slow">${AW(BOTTLE,'#1565C0')}</span>`;
+    }
+    if(g==='vini_buoni_italia'){const m=lv.match(/(\d)/);const n=m?parseInt(m[1]):5;const crown=lv.includes('corona')?AW(CROWN,'#C9A84C'):'';return`<span class="aw-vbi">${crown}${AW(STAR,'#C9A84C',n)}</span>`;}
     if(pt!==null&&pt!==undefined&&pt!=='')return`<span class="aw-score-num">${pt}<span class="aw-score-pts">pt</span></span>`;
     const tier=(a.tier||'silver').toLowerCase();
-    return tier==='gold'?'🏆':tier==='silver'?'🥈':'🥉';
+    const mc=tier==='gold'?'#C9A84C':tier==='silver'?'#A0A0A0':'#CD7F32';
+    return AW(MEDAL,mc);
   }
   /* scoreboard */
   function buildScoreboard(list){
@@ -2006,7 +2023,8 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
     const isBoth=hasCantina&&hasVino;
     const sg=`<div class="storia-grid">${hasCantina?`<div class="storia-block${!isBoth?' full':''}"><div class="storia-block-label storia-cantina-lbl">La Cantina</div><p class="storia-text">${d.note_cantina}</p></div>`:''}${hasVino?`<div class="storia-block${!isBoth?' full':''}"><div class="storia-block-label storia-vino-lbl">Il Vino</div><p class="storia-text">${d.note_vino}</p></div>`:''}</div>`;
     const addr=[ct.indirizzo,ct.comune,ct.provincia].filter(Boolean).join(', ');
-    const ci=[addr?`<div class="contatti-item"><span>📍</span><span>${addr}</span></div>`:'',ct.sito_web?`<div class="contatti-item"><span>🌐</span><span><a href="${ct.sito_web}" target="_blank" rel="noopener">${ct.sito_web.replace(/^https?:\/\//,'')}</a></span></div>`:'',ct.telefono?`<div class="contatti-item"><span>📞</span><span>${ct.telefono}</span></div>`:'',ct.email?`<div class="contatti-item"><span>✉️</span><span><a href="mailto:${ct.email}">${ct.email}</a></span></div>`:''].filter(Boolean).join('');
+    const CI=(p)=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.6;margin-top:.1rem">${p}</svg>`;
+    const ci=[addr?`<div class="contatti-item">${CI('<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>')}<span>${addr}</span></div>`:'',ct.sito_web?`<div class="contatti-item">${CI('<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>')}<span><a href="${ct.sito_web}" target="_blank" rel="noopener">${ct.sito_web.replace(/^https?:\/\//,'')}</a></span></div>`:'',ct.telefono?`<div class="contatti-item">${CI('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 14 19.79 19.79 0 0 1 1.08 5.36 2 2 0 0 1 3.06 3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>')}<span>${ct.telefono}</span></div>`:'',ct.email?`<div class="contatti-item">${CI('<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>')}<span><a href="mailto:${ct.email}">${ct.email}</a></span></div>`:''  ].filter(Boolean).join('');
     document.getElementById('sStoriaContent').innerHTML=sg+(hasContatti?`<div class="contatti-block"><div class="contatti-block-label">Contatti &amp; Indirizzo</div><div class="contatti-grid">${ci}</div></div>`:'');
   }else{ss.style.display='none';}
   document.getElementById('sSommNote').textContent=d.nota_sommelier||'';
