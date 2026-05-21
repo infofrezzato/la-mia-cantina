@@ -440,13 +440,6 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .awl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
 .aroma-tooltip{position:fixed;background:rgba(61,20,32,.93);color:#fff;padding:.35rem .75rem;border-radius:7px;font-size:.82rem;font-weight:600;pointer-events:none;z-index:9999;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.3);display:none;letter-spacing:.01em}
 
-/* Simili in Cantina */
-.simili-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.75rem;margin:.25rem 0}
-.simili-card{background:var(--gray-100);border-radius:9px;padding:.9rem 1rem;cursor:pointer;border:1px solid var(--gray-200);transition:border-color .18s,box-shadow .18s}
-.simili-card:hover{border-color:var(--wine-light);box-shadow:0 2px 10px rgba(107,39,55,.1)}
-.simili-card .sc-cantina{font-size:.62rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.15rem}
-.simili-card .sc-nome{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.25rem;line-height:1.3}
-.simili-card .sc-meta{font-size:.72rem;color:var(--gray-500)}
 
 /* Terroir */
 .terroir-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin:.5rem 0}
@@ -809,12 +802,6 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
           <p class="aroma-desc" id="sSommNote"></p>
         </div>
 
-        <!-- Simili in Cantina -->
-        <div class="section" id="sSimiliSec" style="display:none">
-          <div class="sec-title">🍷 <span>Simili in Cantina</span></div>
-          <p style="font-size:.75rem;color:var(--gray-500);margin-bottom:.75rem">Vini della tua cantina con profilo simile — clicca per aprirne la scheda.</p>
-          <div class="simili-grid" id="sSimili"></div>
-        </div>
 
       </div><!-- /card-body -->
     </div><!-- /wineCard -->
@@ -1940,8 +1927,6 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
     document.getElementById('sStoriaContent').innerHTML=sg+(hasContatti?`<div class="contatti-block"><div class="contatti-block-label">Contatti &amp; Indirizzo</div><div class="contatti-grid">${ci}</div></div>`:'');
   }else{ss.style.display='none';}
   document.getElementById('sSommNote').textContent=d.nota_sommelier||'';
-  /* simili in cantina (async, non blocca il rendering) */
-  buildSimiliInCantina(_currentSchedaId,d,rawVintage).catch(()=>{});
   /* mostra card */
   setSchedaLoading(false);
   document.getElementById('schedaCardArea').style.display='block';
@@ -2033,62 +2018,6 @@ function simulateLongevity(v){
 }
 function shiftLongVintage(delta){const inp=document.getElementById('longSimVintage');const cur=parseInt(inp.value)||(longOffsets?.originalVintage||2018);inp.value=cur+delta;simulateLongevity(cur+delta);}
 
-/* ── Simili in Cantina ── */
-async function buildSimiliInCantina(currentId,curScheda,curAnnata){
-  const sec=document.getElementById('sSimiliSec');
-  if(!sec)return;
-  const allWines=await dbLoad();
-  const curSd=curScheda||{};
-  const curReg=(curSd.regione||'').toLowerCase();
-  const curViti=(curSd.vitigni||[]).map(v=>(v.nome||'').toLowerCase().split(/[\s/]/)[0]);
-  const curTipo=(curSd.tipologia||'').toLowerCase();
-  const curVin=parseInt(curAnnata)||new Date().getFullYear()-5;
-  const curSli=calcLongevityParams(curVin,null,null,null,curSd.gustativo||{}).sli;
-  const candidates=allWines
-    .filter(w=>w.id!==currentId&&w._scheda)
-    .map(w=>{
-      const sd=w._scheda;let sim=0;
-      const wReg=(sd.regione||'').toLowerCase();
-      if(wReg&&curReg){
-        if(wReg===curReg)sim+=40;
-        else if(curReg&&(wReg.split(' ')[0]===curReg.split(' ')[0]))sim+=18;
-      }
-      const wViti=(sd.vitigni||[]).map(v=>(v.nome||'').toLowerCase().split(/[\s/]/)[0]);
-      const overlap=curViti.filter(v=>v&&wViti.some(wv=>wv&&(wv.startsWith(v)||v.startsWith(wv))));
-      sim+=overlap.length*15;
-      if(sd.tipologia&&curTipo&&sd.tipologia.toLowerCase().startsWith(curTipo.split(' ')[0]))sim+=10;
-      const wVin=parseInt(w.annata)||curVin;
-      const wSli=calcLongevityParams(wVin,null,null,null,sd.gustativo||{}).sli;
-      const diff=Math.abs(curSli-wSli);
-      sim+=diff<=5?15:diff<=15?8:diff>30?-8:2;
-      return{w,sd,sim};
-    })
-    .filter(x=>x.sim>=18)
-    .sort((a,b)=>b.sim-a.sim)
-    .slice(0,3);
-  if(candidates.length===0){sec.style.display='none';return;}
-  const cy=new Date().getFullYear();
-  sec.style.display='';
-  document.getElementById('sSimili').innerHTML=`<div class="simili-grid">${candidates.map(({w,sd})=>{
-    const vin2=parseInt(w.annata)||cy-5;
-    const lp2=calcLongevityParams(vin2,(sd.longevita||{}).anno_inizio_picco,(sd.longevita||{}).anno_fine_picco,(sd.longevita||{}).anno_fine_declino,sd.gustativo||{});
-    let badge='',cls='';
-    if(lp2.peakStart>cy+1){badge='🟡 In evoluzione';cls='ls-evolving';}
-    else if(lp2.peakEnd>=cy){badge='🟢 Al picco';cls='ls-peak';}
-    else{badge='🔴 In declino';cls='ls-decline';}
-    const hex=sd.colore_hex||'#6B2737';
-    const meta=[sd.denominazione||sd.tipologia||'',w.annata||''].filter(Boolean).join(' · ');
-    return`<div class="simili-card" onclick="closeScheda();setTimeout(()=>openScheda('${esc(w.id)}'),200)">
-      <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.35rem">
-        <div style="width:9px;height:9px;border-radius:50%;background:${hex};flex-shrink:0"></div>
-        <div class="sc-cantina">${esc(w.cantina||'—')}</div>
-      </div>
-      <div class="sc-nome">${esc(w.nome||'—')}</div>
-      <div class="sc-meta">${esc(meta)}</div>
-      <div class="row-long-badge ${cls}" style="margin-top:.5rem">${badge}</div>
-    </div>`;
-  }).join('')}</div>`;
-}
 
 /* ── Gauge Dials (struttura) ── */
 function buildGauges(params){
