@@ -359,16 +359,16 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .struct-val{font-size:.75rem;color:var(--gray-500)}
 .bar-track{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden}
 .bar-fill{height:100%;background:linear-gradient(to right,var(--wine-mid),var(--wine-light));border-radius:3px;transition:width .8s ease}
-/* Struttura Gustativa — layout affiancato */
-.struct-layout{display:grid;grid-template-columns:1fr 248px;gap:2rem;align-items:start}
-.struct-right{display:flex;flex-direction:column;align-items:center;gap:.5rem}
-.radar-wrap{position:relative;width:248px;height:248px;flex-shrink:0}
+/* Struttura Gustativa — lista analitica */
 .struct-analysis{display:flex;flex-direction:column;margin:.85rem 0 0}
 .struct-note-item{display:grid;grid-template-columns:90px 1fr;gap:.5rem;align-items:baseline;padding:.38rem 0;border-bottom:1px solid var(--gray-200)}
 .struct-note-item:last-child{border-bottom:none}
 .sni-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--wine);padding-top:.05rem}
 .sni-text{font-size:.82rem;color:var(--gray-700);line-height:1.5}
-@media(max-width:640px){.struct-layout{grid-template-columns:1fr}.struct-right{width:100%}.radar-wrap{width:100%;height:240px}}
+/* Testo descrittivo + radar affiancati */
+.desc-radar-row{display:grid;grid-template-columns:1fr 260px;gap:2.5rem;align-items:center;margin-top:1.6rem}
+.radar-wrap{position:relative;width:260px;height:260px;flex-shrink:0}
+@media(max-width:620px){.desc-radar-row{grid-template-columns:1fr}.radar-wrap{width:100%;height:240px;margin:0 auto}}
 
 /* Pairings */
 .pairs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;margin-bottom:1rem}
@@ -739,15 +739,11 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <!-- 04 Struttura + radar -->
         <div class="section">
           <div class="sec-title">04 <span>Struttura Gustativa</span></div>
-          <div class="struct-layout">
-            <div class="struct-left">
-              <div id="sStruct"></div>
-              <div id="sStructNotes"></div>
-              <p class="aroma-desc" id="sPalateDesc" style="margin-top:.8rem"></p>
-            </div>
-            <div class="struct-right">
-              <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
-            </div>
+          <div id="sStruct"></div>
+          <div id="sStructNotes"></div>
+          <div class="desc-radar-row">
+            <p class="aroma-desc" id="sPalateDesc" style="margin:0"></p>
+            <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
           </div>
         </div>
 
