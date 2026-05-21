@@ -2041,12 +2041,13 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
     const[main,nota]=extractNota(c.descrizione);
     sensHtml=`<p class="prose-text">${mdBold(main)}</p>`;
     /* aggiungi alcol e persistenza se non già nella descrizione */
+    const noteParts=[nota,g.alcol_fonte].filter(Boolean).join(' — ');
     const extras=[
-      g.alcol_perc&&`alcol <strong>${g.alcol_perc}</strong>${g.alcol_fonte?` <span style="font-size:.72rem;color:var(--gray-500)">(${g.alcol_fonte})</span>`:''}`,
+      g.alcol_perc&&`alcol <strong>${g.alcol_perc}</strong>`,
       (g.persistenza_sec||g.persistenza_livello)&&`persistenza <strong>${g.persistenza_sec||g.persistenza_livello}</strong>`
     ].filter(Boolean);
     if(extras.length) sensHtml+=`<p class="prose-text" style="margin-top:.5rem">${extras.join(', ')}.</p>`;
-    if(nota) sensHtml+=`<p class="prose-text" style="margin-top:.7rem;font-size:.78rem;color:var(--gray-500);font-style:italic">Nota: ${mdBold(nota)}</p>`;
+    if(noteParts) sensHtml+=`<p class="prose-text" style="margin-top:.7rem;font-size:.78rem;color:var(--gray-500);font-style:italic">Nota: ${mdBold(noteParts)}</p>`;
   }else{
     const sParts=[
       c.tonalita&&`tonalità <strong>${c.tonalita}</strong>`,
