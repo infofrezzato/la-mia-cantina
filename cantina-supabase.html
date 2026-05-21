@@ -338,6 +338,9 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .stat-tile{background:var(--gray-100);border-radius:9px;padding:.95rem 1rem;border-left:3px solid var(--wine)}
 .stat-tile .st-label{font-size:.62rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.28rem}
 .stat-tile .st-val{font-size:.88rem;font-weight:600;color:var(--text)}
+/* Prose box (Sensoriale, Terroir) */
+.scheda-prose-box{background:var(--gray-100);border-radius:9px;padding:1rem 1.15rem}
+.prose-text{font-size:.88rem;line-height:1.8;color:var(--text)}
 .src-chip{display:inline-block;margin-top:.35rem;padding:.18rem .5rem;border-radius:4px;font-size:.58rem;font-weight:600;letter-spacing:.06em}
 .src-official{background:rgba(22,163,74,.1);color:#166534;border:1px solid rgba(22,163,74,.2)}
 .src-web{background:rgba(59,130,246,.1);color:#1e40af;border:1px solid rgba(59,130,246,.2)}
@@ -345,7 +348,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 
 /* Aroma */
 .aroma-row{display:flex;gap:.85rem;margin-bottom:1.1rem;flex-wrap:wrap}
-.aroma-stat{flex:1;min-width:140px;background:var(--gray-100);border-radius:9px;padding:.85rem 1rem;border-left:3px solid var(--gold)}
+.aroma-stat{flex:1;min-width:140px;background:var(--gray-100);border-radius:9px;padding:.85rem 1rem}
 .aroma-stat .st-label{font-size:.62rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.28rem}
 .aroma-stat .st-val{font-size:.88rem;font-weight:600;color:var(--text)}
 .aroma-group{margin-bottom:.9rem}
@@ -376,8 +379,9 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 @media(max-width:680px){.desc-radar-row{grid-template-columns:1fr}.radar-wrap{max-width:320px;margin:0 auto}}
 
 /* Pairings */
-.pairs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;margin-bottom:1rem}
-.pair-card{background:var(--gray-100);border-radius:9px;padding:.95rem 1rem;border-left:3px solid var(--gold)}
+.pairs-grid{display:block;margin-bottom:0}
+.pair-card{background:none;border-radius:0;padding:.75rem 0;border-bottom:1px solid var(--gray-200)}
+.pair-card:last-child{border-bottom:none;padding-bottom:.2rem}
 .pair-food{font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:.25rem}
 .pair-desc{font-size:.78rem;color:var(--gray-500);line-height:1.5;margin-bottom:.5rem}
 .pair-score-row{display:flex;align-items:center;gap:.5rem}
@@ -775,8 +779,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <!-- Terroir -->
         <div class="section" id="sTerrSec" style="display:none">
           <div class="sec-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.5rem;opacity:.7"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> <span>Terroir</span></div>
-          <div class="terroir-grid" id="sTerrGrid"></div>
-          <p class="terroir-note" id="sTerrNote"></p>
+          <div id="sTerrBox"></div>
         </div>
 
         <!-- 02 Sensoriale -->
@@ -809,9 +812,11 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <!-- 05 Abbinamenti -->
         <div class="section">
           <div class="sec-title">05 <span>Abbinamenti</span></div>
-          <div class="pairs-grid" id="sPairs"></div>
-          <div class="pairs-neg-title">❌ Abbinamenti da evitare</div>
-          <div id="sNegPairs"></div>
+          <div class="scheda-prose-box">
+            <div class="pairs-grid" id="sPairs"></div>
+            <div class="pairs-neg-title">❌ Abbinamenti da evitare</div>
+            <div id="sNegPairs"></div>
+          </div>
         </div>
 
         <!-- 06 Longevità -->
@@ -1996,11 +2001,20 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
    const sec=document.getElementById('sTerrSec');
    if(tiles.length>0||t.microclima){
      sec.style.display='';
-     document.getElementById('sTerrGrid').innerHTML=tiles.map(x=>`<div class="terroir-tile"><div class="tt-icon">${x.icon}</div><div class="tt-lbl">${x.lbl}</div><div class="tt-val">${x.val}</div></div>`).join('');
-     document.getElementById('sTerrNote').textContent=t.microclima||'';
+     const tParts=tiles.map(x=>`<strong>${x.lbl}</strong>: ${x.val}`).join('. ')+'.';
+     document.getElementById('sTerrBox').innerHTML=`<div class="scheda-prose-box"><p class="prose-text">${tParts}</p>${t.microclima?`<p class="prose-text" style="margin-top:.65rem;color:var(--gray-500);font-style:italic">${t.microclima}</p>`:''}</div>`;
    }else{sec.style.display='none';}}
-  /* 02 sensoriale */
-  document.getElementById('sStatGrid').innerHTML=[{label:'Tonalità',value:c.tonalita},{label:'Intensità Colore',value:c.intensita},{label:'Trasparenza',value:c.trasparenza},{label:'Dolcezza',value:g.dolcezza},{label:'Alcol',value:g.alcol_perc,fonte:g.alcol_fonte},{label:'Persistenza',value:g.persistenza_sec||g.persistenza_livello}].map(s=>`<div class="stat-tile"><div class="st-label">${s.label}</div><div class="st-val">${s.value||'—'}</div>${s.fonte?prodSourceChip(s.fonte):''}</div>`).join('');
+  /* 02 sensoriale — prosa discorsiva */
+  {const sParts=[
+    c.tonalita&&`<strong>Tonalità</strong>: ${c.tonalita}`,
+    c.intensita&&`<strong>Intensità colore</strong>: ${c.intensita}`,
+    c.trasparenza&&`<strong>Trasparenza</strong>: ${c.trasparenza}`,
+    c.viscosita&&`<strong>Viscosità</strong>: ${c.viscosita}`,
+    g.dolcezza&&`<strong>Dolcezza</strong>: ${g.dolcezza}`,
+    g.alcol_perc&&`<strong>Alcol</strong>: ${g.alcol_perc}${g.alcol_fonte?` <span style="font-size:.72rem;color:var(--gray-500)">(${g.alcol_fonte})</span>`:''}`,
+    (g.persistenza_sec||g.persistenza_livello)&&`<strong>Persistenza</strong>: ${g.persistenza_sec||g.persistenza_livello}`
+  ].filter(Boolean);
+  document.getElementById('sStatGrid').innerHTML=`<div class="scheda-prose-box"><p class="prose-text">${sParts.join('. ')}${sParts.length?'.':''}</p></div>`;}
   /* 03 olfattivo */
   const o=d.olfattivo||{};
   document.getElementById('sAroma').innerHTML=`<div class="aroma-row"><div class="aroma-stat"><div class="st-label">Intensità</div><div class="st-val">${o.intensita||'—'}</div></div><div class="aroma-stat"><div class="st-label">Qualità Olfattiva</div><div class="st-val">${o.qualita||'—'}</div></div></div>${btg('Note Primarie',o.note_primarie,'tag-primary')}${btg('Note Secondarie',o.note_secondarie,'tag-secondary')}${btg('Note Terziarie',o.note_terziarie,'tag-tertiary')}${o.descrizione?`<p class="aroma-desc">${o.descrizione}</p>`:''}`;
