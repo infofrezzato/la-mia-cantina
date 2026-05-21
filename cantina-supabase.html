@@ -338,9 +338,11 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .stat-tile{background:var(--gray-100);border-radius:9px;padding:.95rem 1rem;border-left:3px solid var(--wine)}
 .stat-tile .st-label{font-size:.62rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--gray-500);margin-bottom:.28rem}
 .stat-tile .st-val{font-size:.88rem;font-weight:600;color:var(--text)}
-/* Prose box (Sensoriale, Terroir) */
+/* Prose box (Sensoriale, Terroir, Abbinamenti) */
 .scheda-prose-box{background:var(--gray-100);border-radius:9px;padding:1rem 1.15rem}
 .prose-text{font-size:.88rem;line-height:1.8;color:var(--text)}
+/* Se il prose-box è dentro una grid (es. stat-grid-c), spanno tutte le colonne */
+.stat-grid-c .scheda-prose-box{grid-column:1/-1}
 .src-chip{display:inline-block;margin-top:.35rem;padding:.18rem .5rem;border-radius:4px;font-size:.58rem;font-weight:600;letter-spacing:.06em}
 .src-official{background:rgba(22,163,74,.1);color:#166534;border:1px solid rgba(22,163,74,.2)}
 .src-web{background:rgba(59,130,246,.1);color:#1e40af;border:1px solid rgba(59,130,246,.2)}
@@ -2001,20 +2003,20 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
    const sec=document.getElementById('sTerrSec');
    if(tiles.length>0||t.microclima){
      sec.style.display='';
-     const tParts=tiles.map(x=>`<strong>${x.lbl}</strong>: ${x.val}`).join('. ')+'.';
+     const tParts=tiles.map(x=>`${x.lbl} <strong>${x.val}</strong>`).join(', ')+'.';
      document.getElementById('sTerrBox').innerHTML=`<div class="scheda-prose-box"><p class="prose-text">${tParts}</p>${t.microclima?`<p class="prose-text" style="margin-top:.65rem;color:var(--gray-500);font-style:italic">${t.microclima}</p>`:''}</div>`;
    }else{sec.style.display='none';}}
   /* 02 sensoriale — prosa discorsiva */
   {const sParts=[
-    c.tonalita&&`<strong>Tonalità</strong>: ${c.tonalita}`,
-    c.intensita&&`<strong>Intensità colore</strong>: ${c.intensita}`,
-    c.trasparenza&&`<strong>Trasparenza</strong>: ${c.trasparenza}`,
-    c.viscosita&&`<strong>Viscosità</strong>: ${c.viscosita}`,
-    g.dolcezza&&`<strong>Dolcezza</strong>: ${g.dolcezza}`,
-    g.alcol_perc&&`<strong>Alcol</strong>: ${g.alcol_perc}${g.alcol_fonte?` <span style="font-size:.72rem;color:var(--gray-500)">(${g.alcol_fonte})</span>`:''}`,
-    (g.persistenza_sec||g.persistenza_livello)&&`<strong>Persistenza</strong>: ${g.persistenza_sec||g.persistenza_livello}`
+    c.tonalita&&`tonalità <strong>${c.tonalita}</strong>`,
+    c.intensita&&`intensità <strong>${c.intensita}</strong>`,
+    c.trasparenza&&`trasparenza <strong>${c.trasparenza}</strong>`,
+    c.viscosita&&`viscosità <strong>${c.viscosita}</strong>`,
+    g.dolcezza&&`dolcezza <strong>${g.dolcezza}</strong>`,
+    g.alcol_perc&&`alcol <strong>${g.alcol_perc}</strong>${g.alcol_fonte?` <span style="font-size:.72rem;color:var(--gray-500)">(${g.alcol_fonte})</span>`:''}`,
+    (g.persistenza_sec||g.persistenza_livello)&&`persistenza <strong>${g.persistenza_sec||g.persistenza_livello}</strong>`
   ].filter(Boolean);
-  document.getElementById('sStatGrid').innerHTML=`<div class="scheda-prose-box"><p class="prose-text">${sParts.join('. ')}${sParts.length?'.':''}</p></div>`;}
+  document.getElementById('sStatGrid').innerHTML=`<div class="scheda-prose-box"><p class="prose-text">${sParts.join(', ')}${sParts.length?'.':''}</p></div>`;}
   /* 03 olfattivo */
   const o=d.olfattivo||{};
   document.getElementById('sAroma').innerHTML=`<div class="aroma-row"><div class="aroma-stat"><div class="st-label">Intensità</div><div class="st-val">${o.intensita||'—'}</div></div><div class="aroma-stat"><div class="st-label">Qualità Olfattiva</div><div class="st-val">${o.qualita||'—'}</div></div></div>${btg('Note Primarie',o.note_primarie,'tag-primary')}${btg('Note Secondarie',o.note_secondarie,'tag-secondary')}${btg('Note Terziarie',o.note_terziarie,'tag-tertiary')}${o.descrizione?`<p class="aroma-desc">${o.descrizione}</p>`:''}`;
