@@ -111,6 +111,11 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:#FFF;min-height
 .btn-warn{background:transparent;border:1.5px solid rgba(234,179,8,.4);color:#FDE68A}
 .btn-warn:hover{background:rgba(234,179,8,.08)}
 .btn:disabled{opacity:.38;cursor:not-allowed}
+.btn svg,.icon-btn svg{vertical-align:middle;flex-shrink:0}
+.ls-dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-right:.35rem;vertical-align:middle}
+.ls-evolving .ls-dot{background:#F59E0B}
+.ls-peak .ls-dot{background:#22C55E}
+.ls-decline .ls-dot{background:#EF4444}
 
 /* ── TABLE ── */
 .table-wrap{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden}
@@ -575,12 +580,12 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     <div class="brand-tag">Cloud Edition · Supabase + Perplexity</div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-ghost" onclick="openSettings()" title="Impostazioni Supabase + Perplexity">⚙️ Impostazioni</button>
-    <button class="btn btn-ghost" onclick="printList()" title="Stampa lista corrente">🖨️ Stampa</button>
-    <button class="btn btn-ghost" onclick="exportExcel()">⬇ Esporta</button>
-    <button class="btn btn-warn"  onclick="openResetConfirm()">🗑 Reset DB</button>
-    <button class="btn btn-gold"  onclick="openImportModal()">⬆ Importa Excel</button>
-    <button class="btn btn-primary" onclick="openAddModal()">+ Aggiungi Vino</button>
+    <button class="btn btn-ghost" onclick="openSettings()" title="Impostazioni Supabase + Perplexity"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Impostazioni</button>
+    <button class="btn btn-ghost" onclick="printList()" title="Stampa lista corrente"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Stampa</button>
+    <button class="btn btn-ghost" onclick="exportExcel()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Esporta</button>
+    <button class="btn btn-warn"  onclick="openResetConfirm()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Reset DB</button>
+    <button class="btn btn-gold"  onclick="openImportModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Importa Excel</button>
+    <button class="btn btn-primary" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Aggiungi Vino</button>
   </div>
 </header>
 
@@ -654,8 +659,8 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     <button class="btn btn-ghost" onclick="closeScheda()" style="flex-shrink:0">← Cantina</button>
     <div class="scheda-wine-label" id="schedaWineLabel"></div>
     <div class="scheda-toolbar-btns">
-      <button class="btn btn-ghost" onclick="regenerateScheda()" title="Rigenera scheda con una nuova chiamata API">🔄 Rigenera</button>
-      <button class="btn btn-gold" onclick="printScheda()">🖨️ Stampa PDF</button>
+      <button class="btn btn-ghost" onclick="regenerateScheda()" title="Rigenera scheda con una nuova chiamata API"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Rigenera</button>
+      <button class="btn btn-gold" onclick="printScheda()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Stampa PDF</button>
     </div>
   </div>
 
@@ -663,9 +668,9 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   <div class="scheda-loader" id="schedaLoader">
     <div class="scheda-spin"></div>
     <div class="scheda-loader-phases">
-      <div class="slp" id="slp1">🔍 Ricerca dati</div>
-      <div class="slp" id="slp2">🏆 Premi &amp; critici</div>
-      <div class="slp" id="slp3">📋 Scheda finale</div>
+      <div class="slp" id="slp1"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Ricerca dati</div>
+      <div class="slp" id="slp2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> Premi &amp; critici</div>
+      <div class="slp" id="slp3"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> Scheda finale</div>
     </div>
     <div class="scheda-loader-msg" id="schedaLoaderMsg">Avvio generazione…</div>
   </div>
@@ -720,7 +725,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 
         <!-- Terroir -->
         <div class="section" id="sTerrSec" style="display:none">
-          <div class="sec-title">🌍 <span>Terroir</span></div>
+          <div class="sec-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.5rem;opacity:.7"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> <span>Terroir</span></div>
           <div class="terroir-grid" id="sTerrGrid"></div>
           <p class="terroir-note" id="sTerrNote"></p>
         </div>
@@ -831,7 +836,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modalTitle">Aggiungi Vino</div>
-      <button class="modal-close" onclick="closeModal('wineModal')">✕</button>
+      <button class="modal-close" onclick="closeModal('wineModal')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="editId">
@@ -861,7 +866,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <label>Scheda Tecnica PDF <span style="font-weight:400;color:rgba(255,255,255,.3);font-size:.58rem;letter-spacing:0;text-transform:none">(opzionale — verrà usata per la generazione)</span></label>
         <label class="pdf-drop" id="pdfDrop" for="f-pdf">
           <input type="file" id="f-pdf" accept=".pdf,.txt" style="display:none" onchange="handlePdfSelect(this)">
-          <span class="pdf-drop-icon">📄</span>
+          <span class="pdf-drop-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
           <span class="pdf-drop-text" id="pdfDropText">Trascina qui il PDF o clicca per selezionarlo</span>
         </label>
         <div class="field-hint" id="pdfExtractInfo" style="display:none;color:rgba(100,220,100,.7)">✓ Testo estratto — verrà inviato a Perplexity come riferimento prioritario</div>
@@ -882,7 +887,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('wineModal')">Annulla</button>
-      <button class="btn btn-primary" onclick="saveWine()">💾 Salva</button>
+      <button class="btn btn-primary" onclick="saveWine()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salva</button>
     </div>
   </div>
 </div>
@@ -893,7 +898,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   <div class="modal" style="max-width:660px">
     <div class="modal-header">
       <div class="modal-title">Importa da Excel / CSV</div>
-      <button class="modal-close" onclick="closeModal('importModal')">✕</button>
+      <button class="modal-close" onclick="closeModal('importModal')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="import-info">
@@ -924,7 +929,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   <div class="modal" style="max-width:400px">
     <div class="modal-header">
       <div class="modal-title" id="confirmTitle">Conferma</div>
-      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+      <button class="modal-close" onclick="closeModal('confirmModal')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <p style="font-size:.86rem;color:rgba(255,255,255,.62);line-height:1.65" id="confirmText"></p>
@@ -941,8 +946,8 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 <div class="modal-overlay" id="drinkModal">
   <div class="modal" style="max-width:420px">
     <div class="modal-header">
-      <div class="modal-title">🍷 Segna come Bevuto</div>
-      <button class="modal-close" onclick="closeModal('drinkModal')">✕</button>
+      <div class="modal-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><path d="M8 22h8M12 11v11M7 3h10l-2 8a4 4 0 0 1-6 0L7 3z"/></svg>Segna come Bevuto</div>
+      <button class="modal-close" onclick="closeModal('drinkModal')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <p style="font-size:.84rem;color:rgba(255,255,255,.52);margin-bottom:.45rem" id="drinkWineName"></p>
@@ -972,8 +977,8 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 <div class="modal-overlay" id="settingsModal">
   <div class="modal" style="max-width:440px">
     <div class="modal-header">
-      <div class="modal-title">⚙️ Stato Sistema</div>
-      <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+      <div class="modal-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Stato Sistema</div>
+      <button class="modal-close" onclick="closeModal('settingsModal')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <p class="apikey-info" style="margin-bottom:1.2rem">
@@ -1146,7 +1151,7 @@ async function renderTable() {
   const allLen = (await dbLoad()).length;
 
   if (wines.length===0) {
-    container.innerHTML=`<div class="empty-state"><div class="es-icon">🍾</div><div class="es-title">${allLen===0?'La cantina è vuota':'Nessun risultato'}</div><div class="es-sub">${allLen===0?'Aggiungi il tuo primo vino o importa un file Excel':'Modifica i filtri di ricerca'}</div></div>`;
+    container.innerHTML=`<div class="empty-state"><div class="es-icon">${ICO.bottle}</div><div class="es-title">${allLen===0?'La cantina è vuota':'Nessun risultato'}</div><div class="es-sub">${allLen===0?'Aggiungi il tuo primo vino o importa un file Excel':'Modifica i filtri di ricerca'}</div></div>`;
     return;
   }
 
@@ -1164,10 +1169,10 @@ async function renderTable() {
     const prezzoStr     = w.prezzoAcquisto ? '€ '+Number(w.prezzoAcquisto).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
     const valoreStr     = valore>0 ? '€ '+valore.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0}) : '—';
     const noteCell      = w.note ? `<span title="${esc(w.note)}">${esc(w.note)}</span>` : '<span style="opacity:.28">—</span>';
-    const drinkBtn      = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">🍷</button>` : '';
+    const drinkBtn      = (!w.bevuto && rimasta>0) ? `<button class="icon-btn ib-drink" title="Segna bottiglie bevute" onclick="openDrinkModal('${id}')">${ICO.glass}</button>` : '';
     const hasScheda     = !!w._scheda;
     const schedaTitle   = hasScheda ? 'Visualizza scheda (dalla cache — gratis)' : 'Genera Scheda Tecnica con Perplexity';
-    const schedaIcon    = hasScheda ? '📋' : '📄';
+    const schedaIcon    = hasScheda ? ICO.clipboard : ICO.file;
     const schedaStyle   = hasScheda ? 'color:#4ADE80' : '';
     let longBadge = '';
     if (hasScheda && w._scheda) {
@@ -1178,9 +1183,9 @@ async function renderTable() {
         const vin = parseInt(w.annata) || new Date().getFullYear() - 6;
         const lp2 = calcLongevityParams(vin, sl.anno_inizio_picco, sl.anno_fine_picco, sl.anno_fine_declino, sg);
         const cy2 = new Date().getFullYear();
-        if (lp2.peakStart > cy2 + 1)        longBadge = `<div class="row-long-badge ls-evolving">🟡 In evoluzione · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
-        else if (lp2.peakEnd >= cy2)         longBadge = `<div class="row-long-badge ls-peak">🟢 Al picco · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
-        else                                 longBadge = `<div class="row-long-badge ls-decline">🔴 In declino · picco ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+        if (lp2.peakStart > cy2 + 1)        longBadge = `<div class="row-long-badge ls-evolving"><span class="ls-dot"></span>In evoluzione · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+        else if (lp2.peakEnd >= cy2)         longBadge = `<div class="row-long-badge ls-peak"><span class="ls-dot"></span>Al picco · beva ${lp2.peakStart}–${lp2.peakEnd}</div>`;
+        else                                 longBadge = `<div class="row-long-badge ls-decline"><span class="ls-dot"></span>In declino · picco ${lp2.peakStart}–${lp2.peakEnd}</div>`;
       } catch(e) {}
     }
     return `<tr>
@@ -1609,6 +1614,35 @@ const SCORE_WEIGHTS=[
 ];
 const BOTTLE_SVG='data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 180" fill="none"><rect x="22" y="4" width="16" height="12" rx="3" fill="rgba(201,168,76,.5)"/><rect x="24" y="14" width="12" height="28" rx="2" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.3)" stroke-width="1"/><path d="M14 42 Q8 54 8 68 L8 142 Q8 152 20 152 L40 152 Q52 152 52 142 L52 68 Q52 54 46 42 Z" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/><rect x="11" y="82" width="38" height="52" rx="3" fill="rgba(255,255,255,.10)"/></svg>`);
 
+/* ── SVG icon library ── */
+const S=(p,w=15,h=15)=>`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICO={
+  settings: S('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
+  printer:  S('<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>'),
+  refresh:  S('<polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>'),
+  search:   S('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
+  award:    S('<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>'),
+  clipboard:S('<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>'),
+  file:     S('<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>'),
+  glass:    S('<path d="M8 22h8M12 11v11M7 3h10l-2 8a4 4 0 0 1-6 0L7 3z"/>'),
+  x:        S('<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'),
+  download: S('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'),
+  upload:   S('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>'),
+  plus:     S('<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
+  save:     S('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>'),
+  trash:    S('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'),
+  check:    S('<polyline points="20 6 9 17 4 12"/>'),
+  file2:    S('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'),
+  globe:    S('<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'),
+  thermo:   S('<path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>',18,18),
+  droplet:  S('<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',18,18),
+  rotate:   S('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',18,18),
+  moon:     S('<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',18,18),
+  zap:      S('<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',18,18),
+  calendar: S('<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',18,18),
+  bottle:   S('<path d="M10 2v2.343a4 4 0 0 0-1.172 2.828v1.172A4 4 0 0 0 7 11.515V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-8.485a4 4 0 0 0-1.828-3.172V7.171A4 4 0 0 0 14 4.343V2"/><line x1="10" y1="2" x2="14" y2="2"/>',38,38),
+};
+
 let chartLong=null, chartRadar=null, leafletMap=null, longOffsets=null;
 const LOADER_MSGS=['Ricerca web dati tecnici verificati…','Consultando guide e critici online…','Ricerca premi e riconoscimenti…','Analisi fonti internazionali…','Elaborazione profilo olfattivo…','Struttura gustativa e longevità…','Strutturazione scheda con Sonar Pro…','Finalizzazione JSON…','Quasi pronto…'];
 let loaderTimer;
@@ -1887,7 +1921,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   const simInp=document.getElementById('longSimVintage');if(simInp)simInp.value=origVin;
   document.getElementById('longSimNote').textContent=`Annata analizzata: ${origVin} · SLI: ${lp.sli}/100`;
   document.getElementById('longSimBar').style.display=isNaN(origVin)?'none':'flex';
-  document.getElementById('sStorageGrid').innerHTML=[{icon:'🌡️',label:'Temperatura',value:cons.temperatura},{icon:'💧',label:'Umidità',value:cons.umidita},{icon:'↔️',label:'Posizione',value:cons.posizione},{icon:'🌑',label:'Luce',value:cons.luce},{icon:'📳',label:'Vibrazioni',value:cons.vibrazioni},{icon:'📅',label:'Potenziale ancora',value:cons.anni_ancora}].map(s=>`<div class="storage-tile"><div class="storage-icon">${s.icon}</div><div class="storage-label">${s.label}</div><div class="storage-val">${s.value||'—'}</div></div>`).join('');
+  document.getElementById('sStorageGrid').innerHTML=[{icon:ICO.thermo,label:'Temperatura',value:cons.temperatura},{icon:ICO.droplet,label:'Umidità',value:cons.umidita},{icon:ICO.rotate,label:'Posizione',value:cons.posizione},{icon:ICO.moon,label:'Luce',value:cons.luce},{icon:ICO.zap,label:'Vibrazioni',value:cons.vibrazioni},{icon:ICO.calendar,label:'Potenziale ancora',value:cons.anni_ancora}].map(s=>`<div class="storage-tile"><div class="storage-icon">${s.icon}</div><div class="storage-label">${s.label}</div><div class="storage-val">${s.value||'—'}</div></div>`).join('');
   document.getElementById('sStorageAdvice').textContent=cons.consiglio||'';
   /* 07 annate */
   document.getElementById('sVintages').innerHTML=(d.annate_comparabili||[]).filter(v=>v.anno).map(v=>`<div class="vintage-card"><div class="vintage-year">${v.anno}</div><div class="vintage-note">${v.note||''}</div></div>`).join('');
@@ -1961,7 +1995,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
   /* 10 produzione */
   document.getElementById('sProd').innerHTML=[{label:'Metodo di Vinificazione',value:d.vinificazione,fonte:d.vinificazione_fonte},{label:'Affinamento',value:d.affinamento,fonte:d.affinamento_fonte}].map(p=>`<div class="prod-tile"><div class="st-label">${p.label}</div><div class="st-val">${prodVal(p.value)}</div>${prodSourceChip(p.fonte)}</div>`).join('');
   /* 11 servizio */
-  document.getElementById('sServe').innerHTML=[{icon:'🌡️',label:'Temperatura',value:d.temperatura_servizio},{icon:'⏱️',label:'Decantazione',value:d.decantazione},{icon:'🍷',label:'Bicchiere',value:d.bicchiere}].map(s=>`<div class="serve-tile"><div class="serve-icon">${s.icon}</div><div class="serve-label">${s.label}</div><div class="serve-val">${s.value||'—'}</div></div>`).join('');
+  document.getElementById('sServe').innerHTML=[{icon:ICO.thermo,label:'Temperatura',value:d.temperatura_servizio},{icon:ICO.calendar,label:'Decantazione',value:d.decantazione},{icon:ICO.glass,label:'Bicchiere',value:d.bicchiere}].map(s=>`<div class="serve-tile"><div class="serve-icon">${s.icon}</div><div class="serve-label">${s.label}</div><div class="serve-val">${s.value||'—'}</div></div>`).join('');
   /* 12 storia */
   const hasCantina=d.note_cantina&&!String(d.note_cantina).toUpperCase().includes('NON TROVATO');
   const hasVino=d.note_vino&&!String(d.note_vino).toUpperCase().includes('NON TROVATO');
@@ -2290,7 +2324,8 @@ function showToast(msg,type='info') {
   const ct=document.getElementById('toastContainer');
   const t=document.createElement('div');
   t.className=`toast ${type}`;
-  t.innerHTML=`<span>${{success:'✓',error:'✕',info:'🍷'}[type]||'•'}</span><span>${msg}</span>`;
+  const toastIco={success:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,error:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,info:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 11v11M7 3h10l-2 8a4 4 0 0 1-6 0L7 3z"/></svg>`};
+  t.innerHTML=`<span style="display:flex;align-items:center">${toastIco[type]||'·'}</span><span>${msg}</span>`;
   ct.appendChild(t);
   setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(14px)';t.style.transition='.24s';},3200);
   setTimeout(()=>t.remove(),3500);
