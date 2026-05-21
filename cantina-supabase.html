@@ -359,7 +359,16 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .struct-val{font-size:.75rem;color:var(--gray-500)}
 .bar-track{height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden}
 .bar-fill{height:100%;background:linear-gradient(to right,var(--wine-mid),var(--wine-light));border-radius:3px;transition:width .8s ease}
-.radar-wrap{position:relative;height:280px;margin-top:1.5rem}
+/* Struttura Gustativa — layout affiancato */
+.struct-layout{display:grid;grid-template-columns:1fr 248px;gap:2rem;align-items:start}
+.struct-right{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.radar-wrap{position:relative;width:248px;height:248px;flex-shrink:0}
+.struct-analysis{display:flex;flex-direction:column;margin:.85rem 0 0}
+.struct-note-item{display:grid;grid-template-columns:90px 1fr;gap:.5rem;align-items:baseline;padding:.38rem 0;border-bottom:1px solid var(--gray-200)}
+.struct-note-item:last-child{border-bottom:none}
+.sni-label{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--wine);padding-top:.05rem}
+.sni-text{font-size:.82rem;color:var(--gray-700);line-height:1.5}
+@media(max-width:640px){.struct-layout{grid-template-columns:1fr}.struct-right{width:100%}.radar-wrap{width:100%;height:240px}}
 
 /* Pairings */
 .pairs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.85rem;margin-bottom:1rem}
@@ -730,9 +739,16 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
         <!-- 04 Struttura + radar -->
         <div class="section">
           <div class="sec-title">04 <span>Struttura Gustativa</span></div>
-          <div id="sStruct"></div>
-          <p class="aroma-desc" id="sPalateDesc"></p>
-          <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
+          <div class="struct-layout">
+            <div class="struct-left">
+              <div id="sStruct"></div>
+              <div id="sStructNotes"></div>
+              <p class="aroma-desc" id="sPalateDesc" style="margin-top:.8rem"></p>
+            </div>
+            <div class="struct-right">
+              <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
+            </div>
+          </div>
         </div>
 
         <!-- 05 Abbinamenti -->
@@ -1828,6 +1844,7 @@ function renderSheet(d,rawName,rawVintage,rawProducer,usedWebSearch){
     {name:'Equilibrio',val:g.equilibrio_livello,                           score:g.equilibrio_score||50}
   ]);
   document.getElementById('sPalateDesc').textContent=g.descrizione||'';
+  buildStructNotes(g);
   buildRadarChart([g.acidita_score||50,g.tannini_score||50,g.corpo_score||50,g.complessita_score||50,g.persistenza_score||50,g.equilibrio_score||50]);
   /* 05 abbinamenti */
   document.getElementById('sPairs').innerHTML=(d.abbinamenti||[]).map(p=>{const sc=Math.min(100,Math.max(0,p.affinita||75));const dots=Array.from({length:5},(_,i)=>`<span class="sdot${i<Math.round(sc/20)?' on':''}"></span>`).join('');return`<div class="pair-card"><div class="pair-food">${p.cibo||'—'}</div><div class="pair-desc">${p.descrizione||''}</div><div class="pair-score-row"><div class="score-dots">${dots}</div><span class="score-num">${sc}%</span></div></div>`;}).join('');
@@ -1953,7 +1970,43 @@ function initMap(geo,regioneName){
 function buildRadarChart(scores){
   if(chartRadar){chartRadar.destroy();chartRadar=null;}
   const ctx=document.getElementById('radarCanvas').getContext('2d');
-  chartRadar=new Chart(ctx,{type:'radar',data:{labels:['Acidità','Tannini','Corpo','Complessità','Persistenza','Equilibrio'],datasets:[{data:scores,backgroundColor:'rgba(107,39,55,.15)',borderColor:'#7E3044',borderWidth:2,pointBackgroundColor:'#7E3044',pointBorderColor:'#FFF',pointBorderWidth:1.5,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#2C1810',titleColor:'#C9A84C',bodyColor:'rgba(255,255,255,.85)',callbacks:{label:i=>` ${i.raw}/100`}}},scales:{r:{min:0,max:100,ticks:{stepSize:25,display:false},grid:{color:'rgba(107,39,55,.12)'},angleLines:{color:'rgba(107,39,55,.15)'},pointLabels:{font:{size:11,family:'Inter',weight:'500'},color:'#4A3A2E'}}}}});
+  chartRadar=new Chart(ctx,{type:'radar',data:{labels:['Acidità','Tannini','Corpo','Complessità','Persistenza','Equilibrio'],datasets:[{data:scores,backgroundColor:'rgba(107,39,55,.15)',borderColor:'#7E3044',borderWidth:2,pointBackgroundColor:'#7E3044',pointBorderColor:'#FFF',pointBorderWidth:1.5,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:true,aspectRatio:1,layout:{padding:{top:4,bottom:4,left:4,right:4}},plugins:{legend:{display:false},tooltip:{backgroundColor:'#2C1810',titleColor:'#C9A84C',bodyColor:'rgba(255,255,255,.85)',callbacks:{label:i=>` ${i.raw}/100`}}},scales:{r:{min:0,max:100,ticks:{stepSize:25,display:false},grid:{color:'rgba(107,39,55,.12)'},angleLines:{color:'rgba(107,39,55,.15)'},pointLabels:{font:{size:10,family:'Inter',weight:'600'},color:'#4A3A2E',padding:6}}}}});
+}
+
+function buildStructNotes(g){
+  const el=document.getElementById('sStructNotes');
+  if(!el)return;
+  const pick=(score,entries)=>{for(const[thr,txt]of entries)if(score>=thr)return txt;return entries[entries.length-1][1];};
+  const rows=[
+    ['Acidità',    g.acidita_score   ||50,
+      [[82,'Vivace e tagliente — freschezza pronunciata, ottima predisposizione all\'invecchiamento'],
+       [66,'Equilibrata — conferisce tensione e vivacità senza spigoli'],
+       [46,'Moderata — profilo morbido e rotondo, bevibilità immediata'],
+       [0, 'Delicata — vino molto morbido, pensato per il consumo giovane']]],
+    ['Tannini',    g.tannini_score   ||50,
+      [[82,'Robusti e fitti — colonna portante della struttura, vino longevo per eccellenza'],
+       [66,'Presenti e ben integrati — buona trama, già piacevole da bere'],
+       [42,'Leggeri e soffici — vino agile, scorrevole, pronto'],
+       [0, 'Quasi assenti — tipico di bianchi, rosé o macerazione breve']]],
+    ['Corpo',      g.corpo_score     ||50,
+      [[82,'Pieno e avvolgente — grande presenza in bocca, abbinamenti strutturati'],
+       [66,'Medio-pieno — sostanzioso, versatile a tavola'],
+       [46,'Leggero-medio — snello, scorrevole, ideale a tutto pasto'],
+       [0, 'Esile — costruito per la bevibilità immediata']]],
+    ['Complessità',g.complessita_score||50,
+      [[80,'Molto complesso — strati aromatici sovrapposti, da esplorare sorso dopo sorso'],
+       [65,'Buona complessità — sfaccettato, ogni calice rivela nuance diverse'],
+       [0, 'Profilo diretto — immediato e piacevole, senza sovrastrutture']]],
+    ['Persistenza',g.persistenza_score||50,
+      [[80,'Lunghissima — il finale perdura oltre 15 secondi, indicatore di grande qualità'],
+       [62,'Medio-lunga — chiusura soddisfacente, ben definita e pulita'],
+       [0, 'Breve — tipica di vini freschi e beverini da consumo quotidiano']]],
+    ['Equilibrio', g.equilibrio_score ||50,
+      [[82,'Armonia perfetta — acidità, tannini e alcol si fondono senza nessuna componente che prevale'],
+       [66,'Buon bilanciamento — struttura coerente con lievi asimmetrie'],
+       [0, 'In tensione — qualche componente più marcata; evolverà con il tempo']]],
+  ];
+  el.innerHTML=`<div class="struct-analysis">${rows.map(([label,score,entries])=>`<div class="struct-note-item"><span class="sni-label">${label}</span><span class="sni-text">${pick(score,entries)}</span></div>`).join('')}</div>`;
 }
 
 function calcLongevityParams(vintage,rawPs,rawPe,rawDd,g){
