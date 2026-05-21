@@ -2336,10 +2336,6 @@ function buildAromaWheel(primarie,secondarie,terziarie){
     const ctx=canvas.getContext('2d');
     ctx.setTransform(dpr,0,0,dpr,0,0);
     ctx.clearRect(0,0,SIZE,SIZE);
-    /* soft bg halo */
-    const bg=ctx.createRadialGradient(cx,cy,Ri,cx,cy,R+8);
-    bg.addColorStop(0,'rgba(61,20,32,.04)');bg.addColorStop(1,'rgba(61,20,32,.10)');
-    ctx.beginPath();ctx.arc(cx,cy,R+8,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill();
 
     let a=-Math.PI/2,segIdx=0;
     CATS.forEach(cat=>{
@@ -2348,28 +2344,24 @@ function buildAromaWheel(primarie,secondarie,terziarie){
       const ns=span/cat.notes.length;
       const catHov=hovIdx>=0&&segs[hovIdx]&&segs[hovIdx].cat===cat.label;
 
-      /* inner ring sector */
+      /* inner ring sector — solo fill, nessun bordo */
       ctx.beginPath();
       ctx.moveTo(cx+Rc*Math.cos(a),cy+Rc*Math.sin(a));
       ctx.arc(cx,cy,Ri,a,a+span);
       ctx.arc(cx,cy,Rc,a+span,a,true);
       ctx.closePath();
       ctx.fillStyle=catHov?_adjBright(cat.base,28):cat.base;ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1;ctx.stroke();
 
-      /* category label */
+      /* category label — nessun outline */
       const mid=a+span/2,lr=(Rc+Ri)/2;
       ctx.save();ctx.translate(cx+lr*Math.cos(mid),cy+lr*Math.sin(mid));ctx.rotate(mid+Math.PI/2);
       const fsize=Math.max(10,Math.min(14,10+frac*18));
       ctx.font=`700 ${fsize}px Inter,sans-serif`;
       ctx.textAlign='center';ctx.textBaseline='middle';
-      /* outline scuro per leggibilità su qualsiasi sfondo */
-      ctx.strokeStyle='rgba(0,0,0,.55)';ctx.lineWidth=3;ctx.lineJoin='round';
-      ctx.strokeText(cat.label,0,0);
       ctx.fillStyle='rgba(255,255,255,.97)';ctx.fillText(cat.label,0,0);
       ctx.restore();
 
-      /* outer note sectors */
+      /* outer note sectors — solo fill, nessun bordo */
       cat.notes.forEach((note,i)=>{
         const s2=a+i*ns,e2=s2+ns-.008,m2=(s2+e2)/2;
         const isHov=segIdx===hovIdx;
@@ -2379,10 +2371,8 @@ function buildAromaWheel(primarie,secondarie,terziarie){
         let fill=i%2===0?cat.light:_adjBright(cat.light,-22);
         if(isHov)fill=_adjBright(cat.light,38);
         ctx.fillStyle=fill;ctx.fill();
-        ctx.strokeStyle=isHov?'rgba(255,255,255,.9)':'rgba(255,255,255,.5)';
-        ctx.lineWidth=isHov?1.8:.8;ctx.stroke();
 
-        /* note label */
+        /* note label — nessun outline */
         const lr2=(Ri+R)/2,arcLen=ns*lr2;
         if(arcLen>=11){
           const mc=Math.max(4,Math.floor(arcLen/6));
@@ -2391,9 +2381,6 @@ function buildAromaWheel(primarie,secondarie,terziarie){
           const fsize2=Math.min(12,Math.max(8.5,arcLen/8.5));
           ctx.font=`${isHov?'700':'500'} ${fsize2}px Inter,sans-serif`;
           ctx.textAlign='center';ctx.textBaseline='middle';
-          /* outline per leggibilità garantita */
-          ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=2.5;ctx.lineJoin='round';
-          ctx.strokeText(txt,0,0);
           ctx.fillStyle=isHov?'rgba(30,10,5,1)':'rgba(44,24,16,.92)';
           ctx.fillText(txt,0,0);
           ctx.restore();
