@@ -1781,7 +1781,7 @@ note_vino: 4-6 frasi di PURO STORYTELLING su QUESTO SPECIFICO VINO: origine del 
 Se le informazioni di storytelling non sono disponibili lascia null.`;
   const res=await fetch(PERPLEXITY_PROXY,{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'sonar',messages:[{role:'user',content:prompt}],temperature:.2,max_tokens:4000})
+    body:JSON.stringify({model:'sonar',messages:[{role:'user',content:prompt}],temperature:.2,max_tokens:6000})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`Errore API Perplexity (${res.status})`);}
   const j=await res.json();
