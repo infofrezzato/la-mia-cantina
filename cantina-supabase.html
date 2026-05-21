@@ -555,14 +555,60 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
 
+/* ── MOBILE WINE CARDS ── */
+.mobile-wine-list{display:none;flex-direction:column;gap:.5rem}
+.mwc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden}
+.mwc-top{padding:.75rem .9rem .55rem;cursor:pointer;transition:background .13s;-webkit-tap-highlight-color:transparent;user-select:none}
+.mwc-top:active{background:rgba(255,255,255,.05)}
+.mwc-cantina{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.14rem}
+.mwc-name{font-weight:600;color:rgba(255,255,255,.92);font-size:.92rem;line-height:1.25;margin-bottom:.2rem}
+.mwc-meta{font-size:.74rem;color:rgba(255,255,255,.4);margin-bottom:.42rem}
+.mwc-badges{display:flex;flex-wrap:wrap;gap:.28rem;align-items:center}
+.mwc-footer{display:flex;align-items:center;justify-content:space-between;padding:.42rem .9rem .5rem;border-top:1px solid rgba(255,255,255,.05);background:rgba(0,0,0,.14)}
+.mwc-qty{font-size:.75rem;color:rgba(255,255,255,.36)}
+.mwc-qty strong{color:var(--gold);font-weight:600}
+.mwc-actions{display:flex;gap:.28rem}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px){.stats-row{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){
+  /* Header: solo icone, scroll orizzontale */
+  .btn-txt{display:none}
+  .header-actions{gap:.32rem;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:.15rem;width:100%;scrollbar-width:none}
+  .header-actions::-webkit-scrollbar{display:none}
+  .header-actions .btn{flex-shrink:0;padding:.5rem .62rem}
+  /* Tabella → nascondi, mostra card */
+  .table-wrap{display:none}
+  .mobile-wine-list{display:flex}
+}
 @media(max-width:600px){
-  .app-header{flex-direction:column;gap:.8rem;align-items:flex-start;padding:.9rem 1rem}
-  .stats-row{grid-template-columns:1fr 1fr;padding:.8rem 1rem;gap:.55rem}
-  .main-content{padding:.9rem 1rem}
+  .app-header{flex-direction:column;gap:.6rem;align-items:flex-start;padding:.85rem 1rem}
+  .stats-row{grid-template-columns:1fr 1fr;padding:.7rem 1rem;gap:.5rem}
+  .stat-val{font-size:1.45rem}
+  .main-content{padding:.75rem .85rem}
   .form-row,.form-row-3{grid-template-columns:1fr}
-  .header-actions{flex-wrap:wrap}
+  /* Scheda overlay */
+  #schedaCardArea{padding:.85rem .5rem 3.5rem}
+  .scheda-toolbar{padding:.65rem .85rem;gap:.5rem}
+  .scheda-wine-label{font-size:.8rem}
+  .scheda-toolbar-btns .btn-txt{display:none}
+  /* Card header */
+  .card-header{padding:1.4rem 1.2rem 1.2rem}
+  .header-bottle{display:none}
+  .card-wine-name{font-size:1.75rem}
+  .score-panel{flex-wrap:wrap;padding:.6rem .85rem;gap:.5rem}
+  .sp-divider{display:none}
+  .sp-breakdown{min-width:unset;width:100%}
+  .header-meta{gap:.85rem}
+  /* Card body */
+  .card-body{padding:1.5rem 1.1rem}
+  .section{margin-bottom:1.8rem;padding-bottom:1.8rem}
+  .stat-grid-c{grid-template-columns:repeat(2,1fr)}
+  .gauge-grid{grid-template-columns:repeat(2,1fr)}
+  .storage-grid-c{grid-template-columns:repeat(2,1fr)}
+  .serve-grid{grid-template-columns:repeat(2,1fr)}
+  .pairs-grid{grid-template-columns:1fr}
+  .terroir-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -580,12 +626,12 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     <div class="brand-tag">Cloud Edition · Supabase + Perplexity</div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-ghost" onclick="openSettings()" title="Impostazioni Supabase + Perplexity"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Impostazioni</button>
-    <button class="btn btn-ghost" onclick="printList()" title="Stampa lista corrente"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Stampa</button>
-    <button class="btn btn-ghost" onclick="exportExcel()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Esporta</button>
-    <button class="btn btn-warn"  onclick="openResetConfirm()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Reset DB</button>
-    <button class="btn btn-gold"  onclick="openImportModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Importa Excel</button>
-    <button class="btn btn-primary" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Aggiungi Vino</button>
+    <button class="btn btn-ghost" onclick="openSettings()" title="Impostazioni Supabase + Perplexity"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="btn-txt"> Impostazioni</span></button>
+    <button class="btn btn-ghost" onclick="printList()" title="Stampa lista corrente"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span class="btn-txt"> Stampa</span></button>
+    <button class="btn btn-ghost" onclick="exportExcel()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="btn-txt"> Esporta</span></button>
+    <button class="btn btn-warn"  onclick="openResetConfirm()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><span class="btn-txt"> Reset DB</span></button>
+    <button class="btn btn-gold"  onclick="openImportModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span class="btn-txt"> Importa Excel</span></button>
+    <button class="btn btn-primary" onclick="openAddModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span class="btn-txt"> Aggiungi Vino</span></button>
   </div>
 </header>
 
@@ -617,7 +663,7 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 <main class="main-content">
   <div class="controls-bar">
     <div class="search-wrap">
-      <span class="search-ico">🔍</span>
+      <span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
       <input type="text" class="search-input" id="searchInput" placeholder="Cerca cantina, vino, annata…" oninput="renderTable()">
     </div>
     <select class="ctrl-select" id="filterStatus" onchange="renderTable()">
@@ -649,6 +695,9 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     </div>
     <div id="tableContainer"></div>
   </div>
+
+  <!-- Mobile card list (visibile solo <700px) -->
+  <div id="mobileWineList" class="mobile-wine-list"></div>
 </main>
 
 
@@ -659,8 +708,8 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
     <button class="btn btn-ghost" onclick="closeScheda()" style="flex-shrink:0">← Cantina</button>
     <div class="scheda-wine-label" id="schedaWineLabel"></div>
     <div class="scheda-toolbar-btns">
-      <button class="btn btn-ghost" onclick="regenerateScheda()" title="Rigenera scheda con una nuova chiamata API"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Rigenera</button>
-      <button class="btn btn-gold" onclick="printScheda()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Stampa PDF</button>
+      <button class="btn btn-ghost" onclick="regenerateScheda()" title="Rigenera scheda con una nuova chiamata API"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg><span class="btn-txt"> Rigenera</span></button>
+      <button class="btn btn-gold" onclick="printScheda()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span class="btn-txt"> Stampa PDF</span></button>
     </div>
   </div>
 
@@ -1202,9 +1251,9 @@ async function renderTable() {
       <td>
         <div class="td-actions">
           <button class="icon-btn ib-scheda" title="${schedaTitle}" onclick="openScheda('${id}')" style="${schedaStyle}">${schedaIcon}</button>
-          <button class="icon-btn ib-edit"   title="Modifica"       onclick="openEditModal('${id}')">✏️</button>
+          <button class="icon-btn ib-edit"   title="Modifica"       onclick="openEditModal('${id}')">${ICO.edit}</button>
           ${drinkBtn}
-          <button class="icon-btn ib-del"    title="Elimina"        onclick="openDeleteConfirm('${id}')">🗑️</button>
+          <button class="icon-btn ib-del"    title="Elimina"        onclick="openDeleteConfirm('${id}')">${ICO.trash}</button>
         </div>
       </td>
     </tr>`;
@@ -1226,6 +1275,55 @@ async function renderTable() {
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
+
+  /* ── Mobile card list ── */
+  const mwl = document.getElementById('mobileWineList');
+  if (!mwl) return;
+  const allLen2 = (await dbLoad()).length;
+  if (wines.length === 0) {
+    mwl.innerHTML = `<div class="empty-state"><div class="es-icon">${ICO.bottle}</div><div class="es-title">${allLen2===0?'La cantina è vuota':'Nessun risultato'}</div><div class="es-sub">${allLen2===0?'Aggiungi il tuo primo vino o importa un file Excel':'Modifica i filtri di ricerca'}</div></div>`;
+    return;
+  }
+  mwl.innerHTML = wines.map(w => {
+    const rim2 = Number(w.qtRimasta)||0, tot2 = Number(w.qtTotale)||0;
+    const id2 = esc(w.id);
+    let badge2;
+    if (w.bevuto)                          badge2 = '<span class="badge badge-bev">Bevuto</span>';
+    else if (rim2 < tot2 && rim2 > 0)     badge2 = '<span class="badge badge-part">Parziale</span>';
+    else                                   badge2 = '<span class="badge badge-cant">Cantina</span>';
+    let lb2 = '';
+    if (w._scheda) {
+      try {
+        const sg2=w._scheda.gustativo||{},sl2=w._scheda.longevita||{};
+        const vin2=parseInt(w.annata)||new Date().getFullYear()-6;
+        const lp3=calcLongevityParams(vin2,sl2.anno_inizio_picco,sl2.anno_fine_picco,sl2.anno_fine_declino,sg2);
+        const cy3=new Date().getFullYear();
+        if(lp3.peakStart>cy3+1)       lb2=`<div class="row-long-badge ls-evolving"><span class="ls-dot"></span>In evoluzione · ${lp3.peakStart}–${lp3.peakEnd}</div>`;
+        else if(lp3.peakEnd>=cy3)     lb2=`<div class="row-long-badge ls-peak"><span class="ls-dot"></span>Al picco · ${lp3.peakStart}–${lp3.peakEnd}</div>`;
+        else                          lb2=`<div class="row-long-badge ls-decline"><span class="ls-dot"></span>In declino · picco ${lp3.peakStart}–${lp3.peakEnd}</div>`;
+      } catch(e){}
+    }
+    const hasS2 = !!w._scheda;
+    const drinkBtn2 = (!w.bevuto && rim2 > 0) ? `<button class="icon-btn ib-drink" title="Bevi" onclick="openDrinkModal('${id2}');event.stopPropagation()">${ICO.glass}</button>` : '';
+    const metaParts = [w.annata, w.note ? esc(w.note.substring(0,40))+(w.note.length>40?'…':'') : null].filter(Boolean);
+    return `<div class="mwc">
+      <div class="mwc-top" onclick="openScheda('${id2}')">
+        <div class="mwc-cantina">${esc(w.cantina||'—')}</div>
+        <div class="mwc-name">${esc(w.nome||'—')}</div>
+        ${metaParts.length ? `<div class="mwc-meta">${metaParts.join(' · ')}</div>` : ''}
+        <div class="mwc-badges">${badge2}${lb2}</div>
+      </div>
+      <div class="mwc-footer">
+        <div class="mwc-qty">${rim2>0?`<strong>${rim2}</strong> / ${tot2} bt`:`${tot2} bt — <strong>bevute</strong>`}</div>
+        <div class="mwc-actions">
+          <button class="icon-btn ib-scheda" title="${hasS2?'Visualizza scheda':'Genera scheda'}" onclick="openScheda('${id2}');event.stopPropagation()" style="${hasS2?'color:#4ADE80':''}">${hasS2?ICO.clipboard:ICO.file}</button>
+          <button class="icon-btn ib-edit"   title="Modifica"  onclick="openEditModal('${id2}');event.stopPropagation()">${ICO.edit}</button>
+          ${drinkBtn2}
+          <button class="icon-btn ib-del"    title="Elimina"   onclick="openDeleteConfirm('${id2}');event.stopPropagation()">${ICO.trash}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function setSort(f) {
@@ -1641,6 +1739,7 @@ const ICO={
   zap:      S('<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',18,18),
   calendar: S('<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',18,18),
   bottle:   S('<path d="M10 2v2.343a4 4 0 0 0-1.172 2.828v1.172A4 4 0 0 0 7 11.515V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-8.485a4 4 0 0 0-1.828-3.172V7.171A4 4 0 0 0 14 4.343V2"/><line x1="10" y1="2" x2="14" y2="2"/>',38,38),
+  edit:     S('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>'),
 };
 
 let chartLong=null, chartRadar=null, leafletMap=null, longOffsets=null;
