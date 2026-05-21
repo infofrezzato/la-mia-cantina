@@ -396,10 +396,10 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
 .ls-evolving{background:rgba(234,179,8,.1);color:#92400e;border:1px solid rgba(234,179,8,.25)}
 .ls-peak{background:rgba(22,163,74,.1);color:#166534;border:1px solid rgba(22,163,74,.2)}
 .ls-decline{background:rgba(220,38,38,.1);color:#991b1b;border:1px solid rgba(220,38,38,.2)}
-.row-long-badge{font-size:.6rem;font-weight:600;letter-spacing:.03em;display:inline-flex;align-items:center;padding:.18rem .48rem;border-radius:4px;line-height:1.4;white-space:nowrap}
-.row-long-badge.ls-evolving{background:rgba(234,179,8,.09);color:#92400e;border:1px solid rgba(234,179,8,.22)}
-.row-long-badge.ls-peak{background:rgba(22,163,74,.09);color:#166534;border:1px solid rgba(22,163,74,.2)}
-.row-long-badge.ls-decline{background:rgba(220,38,38,.07);color:#991b1b;border:1px solid rgba(220,38,38,.18)}
+.row-long-badge{display:inline-block;padding:.16rem .48rem;border-radius:20px;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.row-long-badge.ls-evolving{background:rgba(234,179,8,.13);color:#FDE68A;border:1px solid rgba(234,179,8,.28)}
+.row-long-badge.ls-peak{background:rgba(34,197,94,.1);color:#4ADE80;border:1px solid rgba(34,197,94,.22)}
+.row-long-badge.ls-decline{background:rgba(239,68,68,.13);color:#F87171;border:1px solid rgba(239,68,68,.24)}
 .longevity-chart-wrap{position:relative;height:260px;margin:1rem 0}
 .long-sim-bar{display:flex;align-items:center;gap:.6rem;margin-top:.75rem}
 .long-sim-bar input{padding:.38rem .6rem;border:1px solid var(--gray-200);border-radius:6px;font-size:.82rem;color:var(--text);width:90px;background:var(--gray-100)}
@@ -1254,9 +1254,9 @@ async function renderTable() {
         const vin = parseInt(w.annata) || new Date().getFullYear() - 6;
         const lp2 = calcLongevityParams(vin, sl.anno_inizio_picco, sl.anno_fine_picco, sl.anno_fine_declino, sg);
         const cy2 = new Date().getFullYear();
-        if (lp2.peakStart > cy2 + 1)      longCell = `<span class="row-long-badge ls-evolving"><span class="ls-dot"></span>In evoluzione · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
-        else if (lp2.peakEnd >= cy2)       longCell = `<span class="row-long-badge ls-peak"><span class="ls-dot"></span>Al picco · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
-        else                               longCell = `<span class="row-long-badge ls-decline"><span class="ls-dot"></span>In declino · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
+        if (lp2.peakStart > cy2 + 1)      longCell = `<span class="row-long-badge ls-evolving">In evoluzione · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
+        else if (lp2.peakEnd >= cy2)       longCell = `<span class="row-long-badge ls-peak">Al picco · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
+        else                               longCell = `<span class="row-long-badge ls-decline">In declino · ${lp2.peakStart}–${lp2.peakEnd}</span>`;
       } catch(e) {}
     }
     return `<tr>
@@ -1316,9 +1316,9 @@ async function renderTable() {
         const vin2=parseInt(w.annata)||new Date().getFullYear()-6;
         const lp3=calcLongevityParams(vin2,sl2.anno_inizio_picco,sl2.anno_fine_picco,sl2.anno_fine_declino,sg2);
         const cy3=new Date().getFullYear();
-        if(lp3.peakStart>cy3+1)       lb2=`<div class="row-long-badge ls-evolving"><span class="ls-dot"></span>In evoluzione · ${lp3.peakStart}–${lp3.peakEnd}</div>`;
-        else if(lp3.peakEnd>=cy3)     lb2=`<div class="row-long-badge ls-peak"><span class="ls-dot"></span>Al picco · ${lp3.peakStart}–${lp3.peakEnd}</div>`;
-        else                          lb2=`<div class="row-long-badge ls-decline"><span class="ls-dot"></span>In declino · picco ${lp3.peakStart}–${lp3.peakEnd}</div>`;
+        if(lp3.peakStart>cy3+1)       lb2=`<span class="row-long-badge ls-evolving">In evoluzione · ${lp3.peakStart}–${lp3.peakEnd}</span>`;
+        else if(lp3.peakEnd>=cy3)     lb2=`<span class="row-long-badge ls-peak">Al picco · ${lp3.peakStart}–${lp3.peakEnd}</span>`;
+        else                          lb2=`<span class="row-long-badge ls-decline">In declino · ${lp3.peakStart}–${lp3.peakEnd}</span>`;
       } catch(e){}
     }
     const hasS2 = !!w._scheda;
