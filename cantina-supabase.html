@@ -2327,7 +2327,7 @@ function buildAromaWheel(primarie,secondarie,terziarie){
   canvas.style.width=SIZE+'px';canvas.style.height=SIZE+'px';
   const cx=SIZE/2,cy=SIZE/2,R=SIZE/2-10;
   const Rc=R*.20,Ri=R*.46;
-  const GAP=0.025;
+  const GAP=0;
 
   /* store segment data for hit-testing */
   const segs=[];
@@ -2363,7 +2363,7 @@ function buildAromaWheel(primarie,secondarie,terziarie){
 
       /* outer note sectors — solo fill, nessun bordo */
       cat.notes.forEach((note,i)=>{
-        const s2=a+i*ns,e2=s2+ns-.008,m2=(s2+e2)/2;
+        const s2=a+i*ns,e2=s2+ns,m2=(s2+e2)/2;
         const isHov=segIdx===hovIdx;
         if(segs.length<=segIdx)segs.push({a:s2,b:e2,ri:Ri,ro:R,note,cat:cat.label});
 
