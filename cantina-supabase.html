@@ -2620,44 +2620,47 @@ async function doPairing(){
   }
   const lista=avail.map(w=>{
     const s=w._scheda;
-    let info=`id:${w.id} | ${w.cantina||''} "${w.nome||''}" ${w.annata||''} (${w.qtRimasta} btg)`;
+    let info=`id:${w.id} | ${w.cantina||''} "${w.nome||''}" ${w.annata||''}`;
     if(s){
       const vitigni=(s.vitigni||[]).map(v=>v.nome).filter(Boolean).join(', ');
       const g=s.gustativo||{};
       const dettagli=[
         s.tipologia||s.denominazione,
         vitigni,
-        g.acidita_livello&&`acidita ${g.acidita_livello}`,
-        g.tannini_livello&&`tannini ${g.tannini_livello}`,
-        g.corpo_livello&&`corpo ${g.corpo_livello}`,
-        g.alcol_perc&&`${g.alcol_perc}`
-      ].filter(Boolean).join(' | ');
+        g.acidita_livello&&`acidita:${g.acidita_livello}`,
+        g.tannini_livello&&`tannini:${g.tannini_livello}`,
+        g.corpo_livello&&`corpo:${g.corpo_livello}`
+      ].filter(Boolean).join(', ');
       if(dettagli) info+=` [${dettagli}]`;
-      if((s.abbinamenti||[]).length) info+=` — abbinamenti tipici: ${s.abbinamenti.slice(0,3).map(a=>a.cibo).join(', ')}`;
     }
     return`- ${info}`;
   }).join('\n');
 
-  const prompt=`Sei un Master Sommelier con conoscenza enciclopedica di tutti i vini italiani e internazionali. L'utente vuole abbinare un vino a: "${query}"
+  const prompt=`Sei un Master Sommelier. Devi consigliare i vini piu adatti per: "${query}"
 
-Vini disponibili in cantina:
+REGOLE INVIOLABILI — applica sempre, senza eccezioni:
+A) PESCE CRUDO, TARTARE, CARPACCIO DI PESCE, FRUTTI DI MARE, INSALATA DI MARE, CROSTACEI:
+   - VIETATI tutti i vini rossi, qualunque sia la loro qualita
+   - VIETATI bianchi pesanti, burrosi o barricati (Chardonnay con legno, Viognier strutturato, Gewurztraminer)
+   - ADATTI: bianchi leggeri e freschi con alta acidita (Soave, Vermentino, Verdicchio, Pinot Grigio, Gavi, Lugana, Fiano, Greco, Ribolla, Pecorino, Chablis, Muscadet) e spumanti Brut/Extra Brut
+B) PESCE COTTO SEMPLICE (al vapore, al forno leggero): stessi criteri di A, si puo salire leggermente di corpo ma mai oltre un bianco medio
+C) CARNI ROSSE, BRASATI, SELVAGGINA, AGNELLO: rossi strutturati con tannini, corpo pieno
+D) CARNI BIANCHE, PASTA CREMOSA, RISOTTO: bianchi medi o rossi leggeri senza tannini aggressivi
+E) FORMAGGI STAGIONATI, SALUMI GRASSI: rossi strutturati o bianchi ossidativi
+F) DOLCI: vini dolci, Passiti, Moscato; mai vini secchi
+
+Per i vini con dati tecnici tra parentesi quadre usali; per gli altri usa la tua conoscenza enciclopedica del vino basata su produttore, denominazione, vitigno e annata — e il tuo lavoro come Master Sommelier conoscere le caratteristiche di ogni vino.
+Valuta TUTTI i vini in lista con lo stesso rigore, con o senza dati tecnici.
+
+LISTA VINI IN CANTINA:
 ${lista}
 
-Per i vini con dati tecnici tra parentesi quadre usali come riferimento primario; per gli altri usa la tua conoscenza enciclopedica di produttore, denominazione e annata.
+Seleziona da 1 a 5 vini con vera affinita al piatto, ordinati per adattabilita decrescente.
+Per ciascuno scrivi una motivazione di 2-3 frasi: struttura del vino, perche si abbina, cosa esalta nel piatto.
+Se nessun vino e adatto restituisci [].
 
-PRINCIPI FONDAMENTALI DI ABBINAMENTO — rispettali sempre:
-1. PESO: cibo delicato (crudo, pesce leggero, insalata) vuole vino leggero e fresco. Cibo strutturato (brasato, selvaggina, formaggi stagionati) vuole vino con corpo e struttura. Non abbinare mai un vino potente a un cibo delicato.
-2. TANNINI E PESCE: i tannini reagiscono con lo iodio del pesce creando un sapore metallico sgradevole. I rossi tannici sono VIETATI con pesce, frutti di mare e crostacei — anche se il vino e eccellente.
-3. ACIDITA': un vino con buona acidita pulisce il palato da grassi e untuosita (frittura, formaggi cremosi, carni grasse). Con piatti acidi (limone, aceto) scegli un vino altrettanto fresco.
-4. ABBINAMENTO REGIONALE: i vini del territorio si abbinano spesso ai piatti locali (es. Vermentino con pesce sardo, Soave con risotti veneti).
-5. INTENSITA' AROMATICA: piatti delicati vogliono vini delicati; piatti saporiti e aromatici reggono vini piu complessi.
-
-SELEZIONE: includi i vini con buona o ottima affinita reale. Escludi qualsiasi vino che violi i principi sopra. Restituisci da 1 a 5 risultati ordinati per affinita decrescente, [] se nessuno e davvero adatto.
-
-Per ogni vino selezionato scrivi una motivazione di 2-3 frasi: perche le caratteristiche specifiche di quel vino si sposano con il piatto, quale aspetto del cibo esalta, come migliora l'esperienza a tavola.
-
-Rispondi ESCLUSIVAMENTE con un JSON array, nessun altro testo:
-[{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"2-3 frasi di motivazione esperta"}]`;
+Rispondi SOLO con JSON array, zero altro testo:
+[{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"..."}]`;
 
   try{
     const r=await fetch(PERPLEXITY_PROXY,{
