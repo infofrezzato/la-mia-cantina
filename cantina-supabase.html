@@ -2656,13 +2656,20 @@ Rispondi ESCLUSIVAMENTE con un JSON array, nessun altro testo:
   try{
     const r=await fetch(PERPLEXITY_PROXY,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'sonar',messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:600})
+      body:JSON.stringify({model:'sonar',messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:1500})
     });
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
     const j=await r.json();
-    let txt=(j.choices?.[0]?.message?.content||'[]').replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    let txt=j.choices?.[0]?.message?.content||'[]';
+    /* rimuovi markdown code block se presente */
+    txt=txt.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    /* estrai solo la parte JSON array se c'e testo circostante */
+    const m=txt.match(/\[[\s\S]*\]/);
+    txt=m?m[0]:'[]';
     renderPairingResults(JSON.parse(txt),wines);
   }catch(e){
-    res.innerHTML='<p class="pair-none">Errore nella ricerca. Riprova.</p>';
+    console.error('Pairing error:',e);
+    res.innerHTML=`<p class="pair-none">Errore: ${esc(e.message||'Riprova')}.</p>`;
   }
   btn.disabled=false;
 }
