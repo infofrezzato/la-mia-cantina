@@ -2643,12 +2643,18 @@ async function doPairing(){
 Vini disponibili in cantina:
 ${lista}
 
-Per i vini che hanno gia i dati tecnici tra parentesi quadre, usali come riferimento primario.
-Per gli altri, usa la tua conoscenza enciclopedica: conosci le caratteristiche di struttura, acidita, tannini, corpo e aromi di questi vini in base a produttore, denominazione e annata — usala per valutare l'affinita con il piatto esattamente come faresti con un vino che hai assaggiato.
+Per i vini con dati tecnici tra parentesi quadre usali come riferimento primario; per gli altri usa la tua conoscenza enciclopedica di produttore, denominazione e annata.
 
-SELEZIONE: includi i vini con buona o ottima affinita, quelli che consiglieresti con convinzione. Escludi solo i vini chiaramente inadatti. Restituisci da 1 a 5 risultati, [] se nessuno e adatto.
+PRINCIPI FONDAMENTALI DI ABBINAMENTO — rispettali sempre:
+1. PESO: cibo delicato (crudo, pesce leggero, insalata) vuole vino leggero e fresco. Cibo strutturato (brasato, selvaggina, formaggi stagionati) vuole vino con corpo e struttura. Non abbinare mai un vino potente a un cibo delicato.
+2. TANNINI E PESCE: i tannini reagiscono con lo iodio del pesce creando un sapore metallico sgradevole. I rossi tannici sono VIETATI con pesce, frutti di mare e crostacei — anche se il vino e eccellente.
+3. ACIDITA': un vino con buona acidita pulisce il palato da grassi e untuosita (frittura, formaggi cremosi, carni grasse). Con piatti acidi (limone, aceto) scegli un vino altrettanto fresco.
+4. ABBINAMENTO REGIONALE: i vini del territorio si abbinano spesso ai piatti locali (es. Vermentino con pesce sardo, Soave con risotti veneti).
+5. INTENSITA' AROMATICA: piatti delicati vogliono vini delicati; piatti saporiti e aromatici reggono vini piu complessi.
 
-Per ogni vino selezionato scrivi una motivazione di 2-3 frasi: perche le caratteristiche di quel vino si sposano con il piatto, quale aspetto del cibo esalta, come migliora l'esperienza a tavola.
+SELEZIONE: includi i vini con buona o ottima affinita reale. Escludi qualsiasi vino che violi i principi sopra. Restituisci da 1 a 5 risultati ordinati per affinita decrescente, [] se nessuno e davvero adatto.
+
+Per ogni vino selezionato scrivi una motivazione di 2-3 frasi: perche le caratteristiche specifiche di quel vino si sposano con il piatto, quale aspetto del cibo esalta, come migliora l'esperienza a tavola.
 
 Rispondi ESCLUSIVAMENTE con un JSON array, nessun altro testo:
 [{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"2-3 frasi di motivazione esperta"}]`;
