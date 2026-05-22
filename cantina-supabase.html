@@ -616,6 +616,82 @@ tbody td{padding:.75rem .9rem;font-size:.82rem;color:rgba(255,255,255,.68);verti
   .pairs-grid{grid-template-columns:1fr}
   .terroir-grid{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ── PANNELLO ABBINAMENTO ── */
+.pair-panel{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:linear-gradient(180deg,#1e0b12 0%,#2a0e18 100%);
+  border-top:1px solid rgba(201,168,76,.3);
+  box-shadow:0 -6px 40px rgba(0,0,0,.6);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+}
+.pair-panel.closed{transform:translateY(calc(100% - 50px))}
+.pair-handle{
+  height:50px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.4rem;cursor:pointer;user-select:none;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.pair-handle:hover{background:rgba(255,255,255,.03)}
+.pair-handle-left{display:flex;align-items:center;gap:.6rem}
+.pair-handle-icon{color:var(--gold);display:flex;align-items:center}
+.pair-handle-title{
+  font-size:.78rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(255,255,255,.75);
+}
+.pair-handle-badge{
+  font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);
+  color:var(--gold);border-radius:20px;padding:.15rem .55rem;
+}
+.pair-arrow{
+  color:rgba(255,255,255,.35);transition:transform .32s;display:flex;align-items:center;
+}
+.pair-panel:not(.closed) .pair-arrow{transform:rotate(180deg)}
+.pair-body{
+  padding:1rem 1.4rem 1.2rem;max-height:320px;display:flex;flex-direction:column;gap:.8rem;
+}
+.pair-input-row{display:flex;gap:.6rem;align-items:stretch}
+.pair-input{
+  flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:.65rem 1rem;color:#fff;font-size:.85rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color .2s;
+}
+.pair-input::placeholder{color:rgba(255,255,255,.3)}
+.pair-input:focus{border-color:rgba(201,168,76,.5);background:rgba(255,255,255,.08)}
+.pair-btn{
+  background:var(--wine);border:none;border-radius:10px;
+  padding:.65rem 1.2rem;color:#fff;font-size:.8rem;font-weight:600;
+  letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:background .18s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.pair-btn:hover{background:var(--wine-light)}
+.pair-btn:disabled{opacity:.45;cursor:not-allowed}
+.pair-results{overflow-y:auto;display:flex;flex-direction:column;gap:.5rem;max-height:230px}
+.pair-loading{
+  text-align:center;padding:1rem;color:rgba(255,255,255,.4);
+  font-size:.8rem;letter-spacing:.05em;
+}
+.pair-none{color:rgba(255,255,255,.4);font-size:.82rem;padding:.5rem 0;text-align:center}
+.pair-result-item{
+  display:flex;align-items:flex-start;gap:.75rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:.7rem .9rem;cursor:pointer;transition:background .18s;
+}
+.pair-result-item:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.25)}
+.pair-rank{
+  min-width:24px;height:24px;border-radius:50%;
+  background:var(--wine);color:#fff;font-size:.7rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;
+}
+.pair-rank.r1{background:var(--gold);color:#2C1810}
+.pair-info{flex:1;min-width:0}
+.pair-wine-name{font-size:.84rem;font-weight:600;color:#fff;margin-bottom:.2rem}
+.pair-motivo{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.4}
+@media(max-width:600px){
+  .pair-body{padding:.8rem 1rem 1rem}
+  .pair-input-row{flex-direction:column}
+  .pair-btn{justify-content:center}
+}
 </style>
 </head>
 <body>
@@ -2522,6 +2598,88 @@ function showToast(msg,type='info') {
   await updateStats();
   await renderTable();
 })();
+
+/* ── ABBINAMENTO PANNELLO ── */
+function togglePairPanel(){
+  document.getElementById('pairPanel').classList.toggle('closed');
+}
+
+async function doPairing(){
+  const query=document.getElementById('pairInput').value.trim();
+  if(!query)return;
+  const btn=document.getElementById('pairBtn');
+  const res=document.getElementById('pairResults');
+  btn.disabled=true;
+  res.innerHTML='<div class="pair-loading">Analizzo la tua cantina…</div>';
+
+  const wines=await dbLoad();
+  const avail=wines.filter(w=>Number(w.qtRimasta)>0&&!w.bevuto);
+  if(!avail.length){
+    res.innerHTML='<p class="pair-none">Nessun vino disponibile in cantina.</p>';
+    btn.disabled=false;return;
+  }
+  const lista=avail.map(w=>`- id:${w.id} | ${w.cantina||''} "${w.nome||''}" ${w.annata||''} (${w.qtRimasta} btg)`).join('\n');
+
+  const prompt=`Sei un sommelier esperto. L'utente vuole abbinare un vino a: "${query}"
+
+Vini disponibili in cantina:
+${lista}
+
+Scegli SOLO i vini di questa lista (massimo 5) ordinati per adattabilita decrescente.
+Rispondi ESCLUSIVAMENTE con un JSON array, nessun altro testo:
+[{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"una frase breve sul perche si abbina bene"}]
+Se nessun vino e adatto restituisci [].`;
+
+  try{
+    const r=await fetch(PERPLEXITY_PROXY,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'sonar',messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:600})
+    });
+    const j=await r.json();
+    let txt=(j.choices?.[0]?.message?.content||'[]').replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    renderPairingResults(JSON.parse(txt),wines);
+  }catch(e){
+    res.innerHTML='<p class="pair-none">Errore nella ricerca. Riprova.</p>';
+  }
+  btn.disabled=false;
+}
+
+function renderPairingResults(results,wines){
+  const el=document.getElementById('pairResults');
+  if(!results.length){el.innerHTML='<p class="pair-none">Nessun vino in cantina particolarmente adatto a questo abbinamento.</p>';return;}
+  el.innerHTML=results.map((r,i)=>`
+    <div class="pair-result-item" onclick="openScheda('${esc(r.id)}')">
+      <div class="pair-rank${i===0?' r1':''}">${i+1}</div>
+      <div class="pair-info">
+        <div class="pair-wine-name">${esc(r.cantina)} — ${esc(r.nome)} ${r.annata||''}</div>
+        <div class="pair-motivo">${esc(r.motivo)}</div>
+      </div>
+    </div>`).join('');
+}
+
+document.getElementById('pairInput').addEventListener('keydown',e=>{if(e.key==='Enter')doPairing();});
 </script>
+
+<!-- PANNELLO ABBINAMENTO AI -->
+<div id="pairPanel" class="pair-panel closed">
+  <div class="pair-handle" onclick="togglePairPanel()">
+    <div class="pair-handle-left">
+      <span class="pair-handle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8M12 11v11M7 3h10l-2 8a4 4 0 0 1-6 0L7 3z"/></svg></span>
+      <span class="pair-handle-title">Abbinamento AI</span>
+      <span class="pair-handle-badge">Cosa cucini?</span>
+    </div>
+    <span class="pair-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></span>
+  </div>
+  <div class="pair-body">
+    <div class="pair-input-row">
+      <input id="pairInput" class="pair-input" type="text" placeholder="Es: tagliatelle al ragu, bistecca alla fiorentina, formaggi stagionati…" autocomplete="off"/>
+      <button id="pairBtn" class="pair-btn" onclick="doPairing()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Abbina
+      </button>
+    </div>
+    <div id="pairResults" class="pair-results"></div>
+  </div>
+</div>
 </body>
 </html>
