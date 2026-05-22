@@ -2618,14 +2618,32 @@ async function doPairing(){
     res.innerHTML='<p class="pair-none">Nessun vino disponibile in cantina.</p>';
     btn.disabled=false;return;
   }
-  const lista=avail.map(w=>`- id:${w.id} | ${w.cantina||''} "${w.nome||''}" ${w.annata||''} (${w.qtRimasta} btg)`).join('\n');
+  const lista=avail.map(w=>{
+    const s=w._scheda;
+    let info=`id:${w.id} | ${w.cantina||''} "${w.nome||''}" ${w.annata||''} (${w.qtRimasta} btg)`;
+    if(s){
+      const vitigni=(s.vitigni||[]).map(v=>v.nome).filter(Boolean).join(', ');
+      const g=s.gustativo||{};
+      const dettagli=[
+        s.tipologia||s.denominazione,
+        vitigni,
+        g.acidita_livello&&`acidita ${g.acidita_livello}`,
+        g.tannini_livello&&`tannini ${g.tannini_livello}`,
+        g.corpo_livello&&`corpo ${g.corpo_livello}`,
+        g.alcol_perc&&`${g.alcol_perc}`
+      ].filter(Boolean).join(' | ');
+      if(dettagli) info+=` [${dettagli}]`;
+      if((s.abbinamenti||[]).length) info+=` — abbinamenti tipici: ${s.abbinamenti.slice(0,3).map(a=>a.cibo).join(', ')}`;
+    }
+    return`- ${info}`;
+  }).join('\n');
 
   const prompt=`Sei un Master Sommelier. L'utente vuole abbinare un vino a: "${query}"
 
 Vini disponibili in cantina:
 ${lista}
 
-REGOLA FONDAMENTALE: includi SOLO i vini che hanno una vera affinita con il piatto/menu indicato — quelli che un sommelier consiglierebbe senza riserve. Se un vino e neutro, appena accettabile o semplicemente "non stona", NON includerlo. E' meglio restituire 1-2 vini eccellenti che 5 vini mediocri. Se nessun vino e davvero adatto, restituisci [].
+REGOLA FONDAMENTALE: includi solo i vini con una buona o ottima affinita con il piatto/menu — quelli che un sommelier consiglierebbe con convinzione. Escludi i vini chiaramente inadatti o controindicati, ma non essere eccessivamente restrittivo: se un vino funziona bene, includilo. Restituisci da 1 a 5 risultati. Se davvero nessun vino e adatto, restituisci [].
 
 Per ogni vino selezionato scrivi una motivazione di 2-3 frasi che spieghi: perche le caratteristiche di quel vino (struttura, acidita, tannini, aromi) si sposano con il piatto, quale aspetto del cibo esalta e come migliora l'esperienza a tavola.
 
