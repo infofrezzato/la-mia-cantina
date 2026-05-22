@@ -2638,14 +2638,17 @@ async function doPairing(){
     return`- ${info}`;
   }).join('\n');
 
-  const prompt=`Sei un Master Sommelier. L'utente vuole abbinare un vino a: "${query}"
+  const prompt=`Sei un Master Sommelier con conoscenza enciclopedica di tutti i vini italiani e internazionali. L'utente vuole abbinare un vino a: "${query}"
 
 Vini disponibili in cantina:
 ${lista}
 
-REGOLA FONDAMENTALE: includi solo i vini con una buona o ottima affinita con il piatto/menu — quelli che un sommelier consiglierebbe con convinzione. Escludi i vini chiaramente inadatti o controindicati, ma non essere eccessivamente restrittivo: se un vino funziona bene, includilo. Restituisci da 1 a 5 risultati. Se davvero nessun vino e adatto, restituisci [].
+Per i vini che hanno gia i dati tecnici tra parentesi quadre, usali come riferimento primario.
+Per gli altri, usa la tua conoscenza enciclopedica: conosci le caratteristiche di struttura, acidita, tannini, corpo e aromi di questi vini in base a produttore, denominazione e annata — usala per valutare l'affinita con il piatto esattamente come faresti con un vino che hai assaggiato.
 
-Per ogni vino selezionato scrivi una motivazione di 2-3 frasi che spieghi: perche le caratteristiche di quel vino (struttura, acidita, tannini, aromi) si sposano con il piatto, quale aspetto del cibo esalta e come migliora l'esperienza a tavola.
+SELEZIONE: includi i vini con buona o ottima affinita, quelli che consiglieresti con convinzione. Escludi solo i vini chiaramente inadatti. Restituisci da 1 a 5 risultati, [] se nessuno e adatto.
+
+Per ogni vino selezionato scrivi una motivazione di 2-3 frasi: perche le caratteristiche di quel vino si sposano con il piatto, quale aspetto del cibo esalta, come migliora l'esperienza a tavola.
 
 Rispondi ESCLUSIVAMENTE con un JSON array, nessun altro testo:
 [{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"2-3 frasi di motivazione esperta"}]`;
