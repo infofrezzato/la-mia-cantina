@@ -2620,15 +2620,17 @@ async function doPairing(){
   }
   const lista=avail.map(w=>`- id:${w.id} | ${w.cantina||''} "${w.nome||''}" ${w.annata||''} (${w.qtRimasta} btg)`).join('\n');
 
-  const prompt=`Sei un sommelier esperto. L'utente vuole abbinare un vino a: "${query}"
+  const prompt=`Sei un Master Sommelier. L'utente vuole abbinare un vino a: "${query}"
 
 Vini disponibili in cantina:
 ${lista}
 
-Scegli SOLO i vini di questa lista (massimo 5) ordinati per adattabilita decrescente.
+REGOLA FONDAMENTALE: includi SOLO i vini che hanno una vera affinita con il piatto/menu indicato — quelli che un sommelier consiglierebbe senza riserve. Se un vino e neutro, appena accettabile o semplicemente "non stona", NON includerlo. E' meglio restituire 1-2 vini eccellenti che 5 vini mediocri. Se nessun vino e davvero adatto, restituisci [].
+
+Per ogni vino selezionato scrivi una motivazione di 2-3 frasi che spieghi: perche le caratteristiche di quel vino (struttura, acidita, tannini, aromi) si sposano con il piatto, quale aspetto del cibo esalta e come migliora l'esperienza a tavola.
+
 Rispondi ESCLUSIVAMENTE con un JSON array, nessun altro testo:
-[{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"una frase breve sul perche si abbina bene"}]
-Se nessun vino e adatto restituisci [].`;
+[{"id":"...","nome":"...","cantina":"...","annata":0,"motivo":"2-3 frasi di motivazione esperta"}]`;
 
   try{
     const r=await fetch(PERPLEXITY_PROXY,{
